@@ -1,0 +1,6 @@
+_STARtmp
+ensembl
+STAR*
+2.7.0.e*
+TestData/mapper0.*am
+.snakemake

@@ -2,26 +2,7 @@ rule all:
     input:
         "TestData/mapper0.bam"
 
-rule download_genome_fasta:
-    output:
-        "ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-    shell:
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz | "
-        "gunzip -c > ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-
-rule download_gene_model:
-    output:
-        "ensembl/Homo_sapiens.GRCh38.81.gff3"
-    shell:
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens.GRCh38.81.gff3.gz | "
-        "gunzip -c > ensembl/Homo_sapiens.GRCh38.81.gff3"
-
-rule download_protein_fasta:
-    output:
-        "ensembl/Homo_sapiens.GRCh38.pep.all.fa"
-    shell:
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz | "
-        "gunzip -c > ensembl/Homo_sapiens.GRCh38.pep.all.fa"
+include: "rules/downloads.smk"
 
 rule filter_gff3:
     input:
@@ -39,7 +20,6 @@ rule filter_fa:
     script:
         "scripts/filter_fasta.py"
 
-
 # rule download_sras:
 #     input:
 #         lambda wildcards: config["sra"][wildcards.sample]
@@ -56,15 +36,23 @@ rule directories:
     output: directory("ensembl/202122/")
     shell: "mkdir -p ensembl/202122/"
 
+rule star_setup:
+    output: "STAR-2.6.0c/bin/Linux_x86_64/STAR"
+    shell:
+        "wget https://github.com/alexdobin/STAR/archive/2.6.0c.tar.gz"
+        "tar xvf 2.6.0c.tar.gz"
+        "rm 2.6.0c.tar.gz"
+
 rule star_genome_generate:
     input:
-        genomeDir="ensembl/202122/",
+        star="STAR-2.7.0e/bin/Linux_x86_64/STAR",
+        genomeDir=directory("ensembl/202122/"),
         fa="ensembl/202122.fa",
         gff="ensembl/202122.gff3"
     output:
         "ensembl/202122/SA"
     shell:
-        "STAR-2.7.0e/bin/Linux_x86_64/STAR --runMode genomeGenerate --runThreadN {threads} --genomeDir {input.genomeDir} "
+        "{input.star} --runMode genomeGenerate --runThreadN {threads} --genomeDir {input.genomeDir} "
         "--genomeFastaFiles {input.fa} --sjdbGTFfile {input.gff} --sjdbGTFtagExonParentTranscript Parent --sjdbOverhang 100"
 
 rule hisat_genome:

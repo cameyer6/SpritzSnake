@@ -4,3 +4,5 @@ STAR*
 2.7.0e*
 TestData/mapper0.*am
 .snakemake
+TestData/mapper0.split.bam.bai
+ChromosomeMappings

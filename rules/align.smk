@@ -28,20 +28,25 @@ rule hisat_genome:
     output: "ensembl/202122.1.ht2"
     shell: "hisat2-build ensembl/202122.fa ensembl/202122"
 
-# rule hisat2_align_bam:
-#     input:
-#         "ensembl/202122.1.ht2",
-#         fq="TestData/mapper0.fastq"
-#     output: "TestData/mapper0.bam"
-#     shell: "hisat2 -x ensembl/202122 -q {input.fq} | samtools view -l 9 -b -o TestData/mapper0.bam"
+rule hisat2_align_bam:
+    input:
+        "ensembl/202122.1.ht2",
+        fq="TestData/SRR7685050.fastq"
+    output: "TestData/SRR7685050.bam"
+    shell: "hisat2 -x ensembl/202122 -q {input.fq} | samtools view -l 9 -b -o TestData/SRR7685050.bam"
+
+rule hisat2_sort_bam:
+    input: "TestData/SRR7685050.bam"
+    output: "TestData/SRR7685050.sorted.bam",
+    shell: "samtools sort -l 9 {input} -o {output}"
 
 rule hisat2_align_sam:
     input:
         "ensembl/202122.1.ht2",
-        fq="TestData/mapper0.fastq",
+        fq="TestData/SRR7685050.fastq",
         ss="ensembl/202122.splicesites.txt"
-    output: "TestData/mapper0.sam"
-    shell: "hisat2 -x ensembl/202122 -q {input.fq} --known-splicesite-infile {input.ss} > TestData/mapper0.sam"
+    output: "TestData/SRR7685050.sam"
+    shell: "hisat2 -x ensembl/202122 -q {input.fq} --known-splicesite-infile {input.ss} > TestData/SRR7685050.sam"
 
 rule hisat2_splice_sites:
     input: gff="ensembl/202122.gff3"

@@ -1,6 +1,6 @@
 rule all:
     input:
-        "TestData/mapper0.bam"
+        "TestData/SRR393698.bam"
 
 include: "rules/downloads.smk"
 include: "rules/align.smk"

@@ -72,14 +72,15 @@ rule filter_fa:
     script:
         "scripts/filter_fasta.py"
 
-# rule download_sras:
-#     input:
-#         lambda wildcards: config["sra"][wildcards.sample]
-#     output:
-#         "fastqs/{sample}_1.fastq"
-#         "fastqs/{sample}_2.fastq"
-#     log:
-#         "fastqs/{sample}.log"
-#     threads: 4
-#     shell:
-#         "fasterq-dump --progress --threads {threads} --split-files --outdir fastqs 2> {log}"
+rule download_sras:
+    # input:
+    #     lambda wildcards: config["sra"][wildcards.sample]
+    output:
+        "TestData/SRR7685050.fastq"
+        # "fastqs/{sample}_1.fastq"
+        # "fastqs/{sample}_2.fastq"
+    log:
+        "TestData/SRR7685050.log"
+    threads: 4
+    shell:
+        "fasterq-dump --progress --threads {threads} --split-files --outdir TestData SRR7685050 2> {log}"

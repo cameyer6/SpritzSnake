@@ -6,3 +6,4 @@ TestData/mapper0.*am
 .snakemake
 TestData/mapper0.split.bam.bai
 ChromosomeMappings
+TestData/SRR7685050*

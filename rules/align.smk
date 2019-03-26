@@ -28,27 +28,25 @@ rule hisat_genome:
     output: "ensembl/202122.1.ht2"
     shell: "hisat2-build ensembl/202122.fa ensembl/202122"
 
+rule hisat2_splice_sites:
+    input: "ensembl/202122.gff3"
+    output: "ensembl/202122.splicesites.txt"
+    shell: "hisat2_extract_splice_sites.py {input} > {output}"
+
 rule hisat2_align_bam:
     input:
         "ensembl/202122.1.ht2",
-        fq="TestData/SRR7685050.fastq"
-    output: "TestData/SRR7685050.bam"
-    shell: "hisat2 -x ensembl/202122 -q {input.fq} | samtools view -l 9 -b -o TestData/SRR7685050.bam"
-
-rule hisat2_sort_bam:
-    input: "TestData/SRR7685050.bam"
-    output: "TestData/SRR7685050.sorted.bam",
-    shell: "samtools sort -l 9 {input} -o {output}"
-
-rule hisat2_align_sam:
-    input:
-        "ensembl/202122.1.ht2",
-        fq="TestData/SRR7685050.fastq",
+        fq="TestData/ERR315327_1.fastq",
         ss="ensembl/202122.splicesites.txt"
-    output: "TestData/SRR7685050.sam"
-    shell: "hisat2 -x ensembl/202122 -q {input.fq} --known-splicesite-infile {input.ss} > TestData/SRR7685050.sam"
-
-rule hisat2_splice_sites:
-    input: gff="ensembl/202122.gff3"
-    output: ss="ensembl/202122.splicesites.txt"
-    shell: "hisat2_extract_splice_sites.py {input.gff} > {output.ss}"
+    output:
+        sorted="TestData/ERR315327_1.sorted.bam",
+    threads: 12
+    params:
+        compression="9",
+        tempprefix="TestData/ERR315327_1.sorted"
+    log: "TestData/ERR315327.hisat2.log"
+    shell:
+        "(hisat2 -p {threads} -x ensembl/202122 -q {input.fq} --known-splicesite-infile {input.ss} | " # align the suckers
+        "samtools view -h -F4 - | " # get mapped reads only
+        "samtools sort -l {params.compression} -T {params.tempprefix} -o {output.sorted} -) 2> {log} && " # sort them
+        "samtools index {output}"

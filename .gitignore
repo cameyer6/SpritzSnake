@@ -7,3 +7,7 @@ TestData/mapper0.*am
 TestData/mapper0.split.bam.bai
 ChromosomeMappings
 TestData/SRR7685050*
+TestData/ERR*
+SnpEff
+tmp
+snpEffDatabases.txt

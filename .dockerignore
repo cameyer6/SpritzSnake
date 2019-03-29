@@ -1,0 +1,9 @@
+TestData
+tmp
+STAR*
+SnpEff
+ensembl
+ChromosomeMappings
+.snakemake
+snpEffDatabases.txt
+human.proteome.xml

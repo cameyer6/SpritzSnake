@@ -30,7 +30,7 @@ rule download_common_known_variants:
 
 rule download_chromosome_mappings:
     output:
-        "ChromosomeMappings/GRCh38_ensembl2UCSC.txt"
+        "ChromosomeMappings/GRCh38_UCSC2ensembl.txt"
     shell:
         "git clone https://github.com/dpryan79/ChromosomeMappings.git"
 
@@ -73,8 +73,7 @@ rule filter_fa:
         "scripts/filter_fasta.py"
 
 rule download_sras:
-    # input:
-    #     lambda wildcards: config["sra"][wildcards.sample]
+    # input: lambda wildcards: config["sra"][wildcards.sample]
     output:
         "TestData/ERR315327_1.fastq"
         # "fastqs/{sample}_1.fastq"

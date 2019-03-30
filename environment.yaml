@@ -11,4 +11,5 @@ dependencies:
   - sra-tools
   - stringtie
   - biopython
+  - git
   #- vcftools =0.1.15

@@ -11,4 +11,13 @@ TestData/ERR*
 SnpEff
 tmp
 snpEffDatabases.txt
-human.proteome.xml
+human.protein.xml*
+ptmlist.txt
+PSI-MOD*
+GtfSharp/*/bin
+TransferUniProtModifications/*/bin
+GtfSharp/*/obj
+TransferUniProtModifications/*/obj
+GtfSharp/.vs
+TransferUniProtModifications/.vs
+

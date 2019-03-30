@@ -32,3 +32,26 @@ rule filter_transcripts_add_cds:
         "TestData/ERR315327_1.sorted.filtered.withcds.gtf",
     shell:
         "dotnet {input.gtfsharp} -f {input.fa} -g {input.gtf} -r {input.refg}"
+
+rule generate_snpeff_database:
+    input:
+        gtf="TestData/ERR315327_1.sorted.filtered.withcds.gtf",
+        pfa="ensembl/Homo_sapiens.GRCh38.pep.all.fa",
+        gfa="ensembl/202122.fa"
+    output:
+        gtf="SnpEff/data/ERR315327_1.sorted.filtered.withcds.gtf/genes.gtf",
+        pfa="SnpEff/data/ERR315327_1.sorted.filtered.withcds.gtf/protein.fa",
+        gfa="SnpEff/data/genomes/ERR315327_1.sorted.filtered.withcds.gtf.fa",
+    params:
+        ref="ERR315327_1.sorted.filtered.withcds.gtf"
+    shell:
+        """
+        cp {input.gtf} {output.gtf}
+        cp {input.pfa} {output.pfa}
+        cp {input.gfa} {output.gfa}
+        echo \"\n# {params.ref}\" >> SnpEff/snpEff.config
+        echo \"# {params.ref}.genome : Human genome GRCh38 using RefSeq transcripts\" >> SnpEff/snpEff.config
+        echo \"# {params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config
+        echo \"# {params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
+        echo \"# {params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
+        """

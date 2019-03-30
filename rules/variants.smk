@@ -132,9 +132,9 @@ rule filter_indels:
         gatk IndexFeatureFile -F {output}
         """
 
-rule snpeff_data_folder:
-    output: directory("SnpEff/data")
-    shell: "mkdir SnpEff/data"
+# rule snpeff_data_folder:
+#     output: directory("SnpEff/data")
+#     shell: "mkdir SnpEff/data"
 
 rule snpeff_database_setup:
     input:
@@ -153,7 +153,7 @@ rule snpeff_database_setup:
         "echo \"# {params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config"
         "echo \"# {params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config"
 
-rule variant_annotation:
+rule variant_annotation_ref:
     input:
         "SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
@@ -169,6 +169,28 @@ rule variant_annotation:
         ref="GRCh38.86"
     log:
         "TestData/ERR315327_1.spritz.snpeff.log"
+    shell:
+        "(java -Xmx5000M -jar {input.snpeff} -v -stats {output.html}"
+        " -fastaProt {output.protfa} -xmlProt {output.protxml} {params.ref}"
+        " {input.vcf} > {output.ann}) 2> {log}"
+
+rule variant_annotation_custom:
+    input:
+        "SnpEffDatabases.txt",
+        snpeff="SnpEff/snpEff.jar",
+        fa="ensembl/202122.fa",
+        vcf="TestData/ERR315327_1.spritz.vcf",
+        trigger_isoform_reconstruction="SnpEff/data/ERR315327_1.sorted.filtered.withcds.gtf/genes.gtf"
+    output:
+        ann="TestData/ERR315327_1.spritz.tr.snpeff.vcf",
+        html="TestData/ERR315327_1.spritz.tr.snpeff.html",
+        genesummary="TestData/ERR315327_1.spritz.tr.snpeff.genes.txt",
+        protfa="TestData/ERR315327_1.spritz.tr.snpeff.protein.fasta",
+        protxml="TestData/ERR315327_1.spritz.tr.snpeff.protein.xml",
+    params:
+        ref="GRCh38.86"
+    log:
+        "TestData/ERR315327_1.spritz.tr.snpeff.log"
     shell:
         "(java -Xmx5000M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml} {params.ref}"

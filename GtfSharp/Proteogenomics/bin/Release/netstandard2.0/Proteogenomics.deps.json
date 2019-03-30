@@ -1,0 +1,137 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.0/",
+    "signature": "cd1de51a0e1c012e145054f9e38c676ab4d3293f"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.0": {},
+    ".NETStandard,Version=v2.0/": {
+      "Proteogenomics/1.0.0": {
+        "dependencies": {
+          "NETStandard.Library": "2.0.3",
+          "NetBio.Core": "3.0.0-alpha",
+          "mzLib": "1.0.415"
+        },
+        "runtime": {
+          "Proteogenomics.dll": {}
+        }
+      },
+      "MathNet.Numerics/4.4.1": {
+        "runtime": {
+          "lib/netstandard2.0/MathNet.Numerics.dll": {
+            "assemblyVersion": "4.4.1.0",
+            "fileVersion": "4.4.1.0"
+          }
+        }
+      },
+      "Microsoft.NETCore.Platforms/1.1.0": {},
+      "mzLib/1.0.415": {
+        "dependencies": {
+          "MathNet.Numerics": "4.4.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Chemistry.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/FlashLFQ.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/MassSpectrometry.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/Mgf.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/MzIdentML.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/MzLibUtil.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/MzML.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/PepXML.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/Proteomics.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/Spectra.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/UsefulProteomicsDatabases.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "NetBio.Core/3.0.0-alpha": {
+        "runtime": {
+          "lib/netstandard2.0/Bio.Core.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      },
+      "NETStandard.Library/2.0.3": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0"
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Proteogenomics/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MathNet.Numerics/4.4.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QEk2fiO2/rojz4dUFQA+qQXEDOsSxLyk9c9GJPs7e4bdXiw7PERPGKpq1Vv1E557L7D4yeijz3O0eaZ2nPDLrA==",
+      "path": "mathnet.numerics/4.4.1",
+      "hashPath": "mathnet.numerics.4.4.1.nupkg.sha512"
+    },
+    "Microsoft.NETCore.Platforms/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "path": "microsoft.netcore.platforms/1.1.0",
+      "hashPath": "microsoft.netcore.platforms.1.1.0.nupkg.sha512"
+    },
+    "mzLib/1.0.415": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hVff8oPrHA9X+aibHRRVV0yvgICCErXtveSREMnN4sBEO7nElbe/yRDhRd7QSr6JzJ4xkkkDMILlowaUgCGnLQ==",
+      "path": "mzlib/1.0.415",
+      "hashPath": "mzlib.1.0.415.nupkg.sha512"
+    },
+    "NetBio.Core/3.0.0-alpha": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RcyiZYcdAAjOUtVW64sDVgMX5ZfcnqJRbjnuF9mAe8NWsQIWsoo5B1c64Ij56IsCxmFashSqZq1csOMlOGN/iw==",
+      "path": "netbio.core/3.0.0-alpha",
+      "hashPath": "netbio.core.3.0.0-alpha.nupkg.sha512"
+    },
+    "NETStandard.Library/2.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
+      "path": "netstandard.library/2.0.3",
+      "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
+    }
+  }
+}

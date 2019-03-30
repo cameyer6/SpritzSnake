@@ -8,7 +8,7 @@ using System.IO;
 
 namespace GtfSharp
 {
-    public class GtfSharp
+    internal class GtfSharp
     {
         private static void Main(string[] args)
         {

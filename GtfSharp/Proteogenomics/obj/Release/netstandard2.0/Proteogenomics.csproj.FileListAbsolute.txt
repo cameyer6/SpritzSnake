@@ -1,12 +1,3 @@
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/bin/Release/netstandard2.0/Proteogenomics.deps.json
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/bin/Release/netstandard2.0/Proteogenomics.dll
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/obj/Release/netstandard2.0/Proteogenomics.csprojAssemblyReference.cache
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/obj/Release/netstandard2.0/Proteogenomics.csproj.CoreCompileInputs.cache
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/obj/Release/netstandard2.0/Proteogenomics.AssemblyInfoInputs.cache
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/obj/Release/netstandard2.0/Proteogenomics.AssemblyInfo.cs
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/bin/Release/netstandard2.0/Proteogenomics.pdb
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/obj/Release/netstandard2.0/Proteogenomics.dll
-C:/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/obj/Release/netstandard2.0/Proteogenomics.pdb
 /mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/bin/Release/netstandard2.0/Proteogenomics.deps.json
 /mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/bin/Release/netstandard2.0/Proteogenomics.dll
 /mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/bin/Release/netstandard2.0/Proteogenomics.pdb

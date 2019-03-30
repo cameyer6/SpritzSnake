@@ -80,7 +80,7 @@
   },
   "libraries": {
     "MathNet.Numerics/4.4.1": {
-      "sha512": "QEk2fiO2/rojz4dUFQA+qQXEDOsSxLyk9c9GJPs7e4bdXiw7PERPGKpq1Vv1E557L7D4yeijz3O0eaZ2nPDLrA==",
+      "sha512": "6099OBB1UPcKddDNFRnXKSKChi6ArGum9h/1h9nsUIWWS4U6Iq+hV3RQGx9fR2pZi4jVbfPDGsKqeykmiMj1lg==",
       "type": "package",
       "path": "mathnet.numerics/4.4.1",
       "files": [
@@ -299,28 +299,30 @@
     ]
   },
   "packageFolders": {
-    "/home/acesnik/.nuget/packages/": {},
-    "/usr/share/dotnet/sdk/NuGetFallbackFolder": {}
+    "C:\\Users\\antho\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/Proteogenomics.csproj",
+      "projectUniqueName": "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\Proteogenomics\\Proteogenomics.csproj",
       "projectName": "Proteogenomics",
-      "projectPath": "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/Proteogenomics.csproj",
-      "packagesPath": "/home/acesnik/.nuget/packages/",
-      "outputPath": "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/obj/",
+      "projectPath": "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\Proteogenomics\\Proteogenomics.csproj",
+      "packagesPath": "C:\\Users\\antho\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\Proteogenomics\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "/home/acesnik/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\antho\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netstandard2.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

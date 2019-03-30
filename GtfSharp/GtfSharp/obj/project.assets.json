@@ -285,7 +285,7 @@
   },
   "libraries": {
     "FluentCommandLineParser/1.4.3": {
-      "sha512": "5NiwUPXtGXL7g+ydFVvSrlUjdOR0rhEMVg+NJtB8d8ckNRrCu0zSiKCRXdpCBjR0rEkdYhmJFDhhDbvjP4Zv5g==",
+      "sha512": "gxAMEadnz0D3OGF06SAMgszVa6mnM5wuPORbN8+Xj5raUOvTV/anocDmSPLDHOsmGzCmk5YaSQWIxxM3r/JFUQ==",
       "type": "package",
       "path": "fluentcommandlineparser/1.4.3",
       "files": [
@@ -302,7 +302,7 @@
       ]
     },
     "MathNet.Numerics/4.4.1": {
-      "sha512": "QEk2fiO2/rojz4dUFQA+qQXEDOsSxLyk9c9GJPs7e4bdXiw7PERPGKpq1Vv1E557L7D4yeijz3O0eaZ2nPDLrA==",
+      "sha512": "6099OBB1UPcKddDNFRnXKSKChi6ArGum9h/1h9nsUIWWS4U6Iq+hV3RQGx9fR2pZi4jVbfPDGsKqeykmiMj1lg==",
       "type": "package",
       "path": "mathnet.numerics/4.4.1",
       "files": [
@@ -855,35 +855,37 @@
     ]
   },
   "packageFolders": {
-    "/home/acesnik/.nuget/packages/": {},
-    "/usr/share/dotnet/sdk/NuGetFallbackFolder": {}
+    "C:\\Users\\antho\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/GtfSharp/GtfSharp.csproj",
+      "projectUniqueName": "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\GtfSharp\\GtfSharp.csproj",
       "projectName": "GtfSharp",
-      "projectPath": "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/GtfSharp/GtfSharp.csproj",
-      "packagesPath": "/home/acesnik/.nuget/packages/",
-      "outputPath": "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/GtfSharp/obj/",
+      "projectPath": "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\GtfSharp\\GtfSharp.csproj",
+      "packagesPath": "C:\\Users\\antho\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\GtfSharp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "/home/acesnik/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\antho\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.1"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/Proteogenomics.csproj": {
-              "projectPath": "/mnt/c/Users/antho/Documents/Code_Other/spritz/GtfSharp/Proteogenomics/Proteogenomics.csproj"
+            "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\Proteogenomics\\Proteogenomics.csproj": {
+              "projectPath": "C:\\Users\\antho\\Documents\\Code_Other\\spritz\\GtfSharp\\Proteogenomics\\Proteogenomics.csproj"
             }
           }
         }
@@ -902,7 +904,6 @@
             "version": "[1.4.3, )"
           },
           "Microsoft.NETCore.App": {
-            "suppressParent": "All",
             "target": "Package",
             "version": "[2.1.0, )",
             "autoReferenced": true

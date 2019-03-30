@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.539
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GtfSharp", "GtfSharp\GtfSharp.csproj", "{77148EC0-966F-4C80-83C6-DEC909657DFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GtfSharp", "GtfSharp\GtfSharp.csproj", "{77148EC0-966F-4C80-83C6-DEC909657DFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proteogenomics", "Proteogenomics\Proteogenomics.csproj", "{3D818653-7411-40CB-8C10-F09673016065}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proteogenomics", "Proteogenomics\Proteogenomics.csproj", "{3D818653-7411-40CB-8C10-F09673016065}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

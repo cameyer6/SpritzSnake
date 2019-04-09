@@ -59,13 +59,25 @@ rule filter_fa:
     script: "scripts/filter_fasta.py"
 
 rule download_sras:
-    # input: lambda wildcards: config["sra"][wildcards.sample]
+    # input:
+    #     sample = lambda wildcards: config["sra"][wildcards.sample]
     output:
         "TestData/ERR315327_1.fastq"
-        # "fastqs/{sample}_1.fastq"
-        # "fastqs/{sample}_2.fastq"
+        #"TestData/ERR315327_2.fastq"
     log:
         "TestData/ERR315327.log"
     threads: 4
-    shell:
-        "fasterq-dump --progress --threads {threads} --split-files --outdir TestData ERR315327 2> {log}"
+    shell: # --outdir directory SRAaccession
+        "fasterq-dump --progress --threads {threads} --split-files --outdir TestData ERR315327 2> {log}" # shell for downloading sras
+
+# rule download_sras:
+#     input:
+#         sample = lambda wildcards: config["sra"][wildcards.sample]
+#     output:
+#         "TestData/{sample}_1.fastq"
+#         "TestData/{sample}_2.fastq"
+#     log:
+#         "TestData/{sample}.log"
+#     threads: 4
+#     shell: # --outdir directory SRAaccession
+#         "fasterq-dump --progress --threads {threads} --split-files --outdir TestData {wildcards.sample} 2> {log}" # shell for downloading sras

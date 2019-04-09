@@ -1,10 +1,10 @@
 rule assemble_transcripts:
     input:
-        bam="TestData/ERR315327_1.sorted.bam",
+        bam="TestData/{sample}_1.sorted.bam",
         gff="ensembl/202122.gff3"
-    output: "TestData/ERR315327_1.sorted.gtf"
+    output: "TestData/{sample}_1.sorted.gtf"
     threads: 12
-    log: "TestData/ERR315327_1.sorted.gtf.log"
+    log: "TestData/{sample}_1.sorted.gtf.log"
     shell: "stringtie {input.bam} -p {threads} -G {input.gff} -o {output} 2> {log}" # strandedness: --fr for forwared or --rf for reverse
 
 # rule filter_gtf_entries_without_strand
@@ -24,26 +24,26 @@ rule build_gtf_sharp:
 rule filter_transcripts_add_cds:
     input:
         gtfsharp="GtfSharp/GtfSharp/bin/Release/netcoreapp2.1/GtfSharp.dll",
-        gtf="TestData/ERR315327_1.sorted.gtf",
+        gtf="TestData/{sample}_1.sorted.gtf",
         fa="ensembl/202122.fa",
         refg="ensembl/202122.gff3"
     output:
-        temp("TestData/ERR315327_1.sorted.filtered.gtf"),
-        "TestData/ERR315327_1.sorted.filtered.withcds.gtf",
+        temp("TestData/{sample}_1.sorted.filtered.gtf"),
+        "TestData/{sample}_1.sorted.filtered.withcds.gtf",
     shell:
         "dotnet {input.gtfsharp} -f {input.fa} -g {input.gtf} -r {input.refg}"
 
 rule generate_snpeff_database:
     input:
-        gtf="TestData/ERR315327_1.sorted.filtered.withcds.gtf",
+        gtf="TestData/{sample}_1.sorted.filtered.withcds.gtf",
         pfa="ensembl/Homo_sapiens.GRCh38.pep.all.fa",
         gfa="ensembl/202122.fa"
     output:
-        gtf="SnpEff/data/ERR315327_1.sorted.filtered.withcds.gtf/genes.gtf",
-        pfa="SnpEff/data/ERR315327_1.sorted.filtered.withcds.gtf/protein.fa",
-        gfa="SnpEff/data/genomes/ERR315327_1.sorted.filtered.withcds.gtf.fa",
+        gtf="SnpEff/data/{sample}_1.sorted.filtered.withcds.gtf/genes.gtf",
+        pfa="SnpEff/data/{sample}_1.sorted.filtered.withcds.gtf/protein.fa",
+        gfa="SnpEff/data/genomes/{sample}_1.sorted.filtered.withcds.gtf.fa",
     params:
-        ref="ERR315327_1.sorted.filtered.withcds.gtf"
+        ref="{sample}_1.sorted.filtered.withcds.gtf"
     shell:
         """
         cp {input.gtf} {output.gtf}

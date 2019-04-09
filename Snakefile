@@ -1,6 +1,8 @@
+configfile: "config.yaml"
+
 rule all:
     input:
-        "TestData/ERR315327_1.spritz.tr.snpeff.protein.withmods.xml"
+        expand("TestData/{sample}_1.spritz.tr.snpeff.protein.withmods.xml", sample=config["sra"])
 
 include: "rules/downloads.smk"
 include: "rules/align.smk"

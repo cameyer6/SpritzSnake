@@ -36,15 +36,15 @@ rule hisat2_splice_sites:
 rule hisat2_align_bam:
     input:
         "ensembl/202122.1.ht2",
-        fq="TestData/ERR315327_1.fastq",
+        fq="TestData/{sample}_1.fastq",
         ss="ensembl/202122.splicesites.txt"
     output:
-        sorted="TestData/ERR315327_1.sorted.bam",
+        sorted="TestData/{sample}_1.sorted.bam",
     threads: 12
     params:
         compression="9",
-        tempprefix="TestData/ERR315327_1.sorted"
-    log: "TestData/ERR315327.hisat2.log"
+        tempprefix="TestData/{sample}_1.sorted"
+    log: "TestData/{sample}.hisat2.log"
     shell:
         "(hisat2 -p {threads} -x ensembl/202122 -q {input.fq} --known-splicesite-infile {input.ss} | " # align the suckers
         "samtools view -h -F4 - | " # get mapped reads only

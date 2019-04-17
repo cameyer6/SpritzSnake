@@ -12,4 +12,5 @@ dependencies:
   - stringtie
   - biopython
   - git
+  - maven
   #- vcftools =0.1.15

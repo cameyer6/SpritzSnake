@@ -56,7 +56,7 @@ rule filter_gff3:
 rule filter_fa:
     input: "ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
     output: "ensembl/202122.fa"
-    script: "scripts/filter_fasta.py"
+    script: "../scripts/filter_fasta.py"
 
 rule download_sras:
     output:

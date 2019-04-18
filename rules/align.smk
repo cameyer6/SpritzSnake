@@ -37,10 +37,10 @@ rule hisat2_splice_sites:
 
 def input_fqs():
     if "sra" in config:
-        if os.path.exists(expand("TestData/{sample}_1.fastq", sample=config["sra"])[0]):
-            return expand(["TestData/{sample}_1.fastq", "TestData/{sample}_2.fastq"], sample=config["sra"])
-        else:
-            return expand(["TestData/{sample}.fastq"], sample=config["sra"])
+        # if os.path.exists(expand("TestData/{sample}_1.fastq", sample=config["sra"])[0]):
+        return expand(["TestData/{sample}_1.fastq", "TestData/{sample}_2.fastq"], sample=config["sra"])
+        # else:
+        #     return expand(["TestData/{sample}.fastq"], sample=config["sra"])
     elif "fastq" in config:
         print("Not implemented: ""fastq"" in config not implemented, yet.")
         exit(1) # todo: implement this option for fastqs that are specified directly
@@ -74,3 +74,21 @@ rule hisat2_align_bam:
             "samtools view -h -F4 - | " # get mapped reads only
             "samtools sort -l {params.compression} -T {params.tempprefix} -o {output.sorted} -) 2> {log} && " # sort them
             "samtools index {output}")
+
+rule hisat2_merge_bams:
+    input:
+        bams=expand("TestData/{sample}.sorted.bam", sample=config["sra"])
+    output:
+        sorted="TestData/" + "_".join(config["sra"]) + ".sorted.bam"
+    params:
+        compression="9",
+        tempprefix="{output}"[:-4]
+    log: "{output}"[:-4] + ".log"
+    shell:
+        "(ls {input.bams} | "
+        "{{ read firstbam; "
+        "samtools view -h ""$firstbam""; "
+        "while read bam; do samtools view ""$bam""; done; }} | "
+        "samtools view -ubS - | "
+        "samtools sort -l {params.compression} -T {params.tempprefix} -o {output.sorted} -) 2> {log} && "
+        "samtools index {output.sorted}"

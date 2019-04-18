@@ -1,15 +1,15 @@
 rule assemble_transcripts:
     input:
-        bam="TestData/{sample}_1.sorted.bam",
+        bam="TestData/" + "_".join(config["sra"]) + ".sorted.bam",
         gff="ensembl/202122.gff3"
-    output: "TestData/{sample}_1.sorted.gtf"
+    output: "TestData/" + "_".join(config["sra"]) + ".sorted.gtf"
     threads: 12
-    log: "TestData/{sample}_1.sorted.gtf.log"
+    log: "TestData/" + "_".join(config["sra"]) + ".sorted.gtf.log"
     shell: "stringtie {input.bam} -p {threads} -G {input.gff} -o {output} 2> {log}" # strandedness: --fr for forwared or --rf for reverse
 
 # rule filter_gtf_entries_without_strand
-#     input: "TestData/ERR315327_1.sorted.gtf"
-#     output: "TestData/ERR315327_1.sorted.filtered.gtf"
+#     input: "TestData/ERR315327.sorted.gtf"
+#     output: "TestData/ERR315327.sorted.filtered.gtf"
 #     script:
 
 rule build_gtf_sharp:
@@ -24,26 +24,26 @@ rule build_gtf_sharp:
 rule filter_transcripts_add_cds:
     input:
         gtfsharp="GtfSharp/GtfSharp/bin/Release/netcoreapp2.1/GtfSharp.dll",
-        gtf="TestData/{sample}_1.sorted.gtf",
+        gtf="TestData/" + "_".join(config["sra"]) + ".sorted.gtf",
         fa="ensembl/202122.fa",
         refg="ensembl/202122.gff3"
     output:
-        temp("TestData/{sample}_1.sorted.filtered.gtf"),
-        "TestData/{sample}_1.sorted.filtered.withcds.gtf",
+        temp("TestData/" + "_".join(config["sra"]) + ".sorted.filtered.gtf"),
+        "TestData/" + "_".join(config["sra"]) + ".sorted.filtered.withcds.gtf",
     shell:
         "dotnet {input.gtfsharp} -f {input.fa} -g {input.gtf} -r {input.refg}"
 
 rule generate_snpeff_database:
     input:
-        gtf="TestData/{sample}_1.sorted.filtered.withcds.gtf",
+        gtf="TestData/" + "_".join(config["sra"]) + ".sorted.filtered.withcds.gtf",
         pfa="ensembl/Homo_sapiens.GRCh38.pep.all.fa",
         gfa="ensembl/202122.fa"
     output:
-        gtf="SnpEff/data/{sample}_1.sorted.filtered.withcds.gtf/genes.gtf",
-        pfa="SnpEff/data/{sample}_1.sorted.filtered.withcds.gtf/protein.fa",
-        gfa="SnpEff/data/genomes/{sample}_1.sorted.filtered.withcds.gtf.fa",
+        gtf="SnpEff/data/" + "_".join(config["sra"]) + ".sorted.filtered.withcds.gtf/genes.gtf",
+        pfa="SnpEff/data/" + "_".join(config["sra"]) + ".sorted.filtered.withcds.gtf/protein.fa",
+        gfa="SnpEff/data/genomes/" + "_".join(config["sra"]) + ".sorted.filtered.withcds.gtf.fa",
     params:
-        ref="{sample}_1.sorted.filtered.withcds.gtf"
+        ref="" + "_".join(config["sra"]) + ".sorted.filtered.withcds.gtf"
     shell:
         """
         cp {input.gtf} {output.gtf}

@@ -17,9 +17,9 @@ rule transfer_modifications:
         transfermods="TransferUniProtModifications/TransferUniProtModifications/bin/Release/netcoreapp2.1/TransferUniProtModifications.dll",
         unixml="human.protein.xml.gz",
         # unixml="TestData/Homo_sapiens_202022.xml.gz",
-        protxml="TestData/{sample}_1.spritz.tr.snpeff.protein.xml",
+        protxml="TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.protein.xml",
     output:
-        "TestData/{sample}_1.spritz.tr.snpeff.protein.withmods.xml",
-        "TestData/{sample}_1.spritz.tr.snpeff.protein.fasta"
+        "TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.protein.withmods.xml",
+        "TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.protein.fasta"
     shell:
         "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml}"

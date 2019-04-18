@@ -1,1 +1,2 @@
-sra: ["ERR315327"]
+sra: ["ERR315327","ERR315394"]
+analysis_directory: ["TestData"]

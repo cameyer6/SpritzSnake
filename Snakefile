@@ -2,7 +2,7 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        expand("TestData/{sample}_1.spritz.tr.snpeff.protein.withmods.xml", sample=config["sra"])
+        "TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.protein.withmods.xml"
 
 include: "rules/downloads.smk"
 include: "rules/align.smk"

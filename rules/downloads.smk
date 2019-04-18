@@ -60,10 +60,9 @@ rule filter_fa:
 
 rule download_sras:
     output:
-        "{sample}_1.fastq"
-        #"TestData/{sample}_2.fastq"
-    log:
-        "{sample}.log"
+        "TestData/{sra}_1.fastq",
+        "TestData/{sra}_2.fastq"
+    log: "TestData/{sra}.log"
     threads: 4
     shell:
-        "fasterq-dump --progress --threads {threads} --split-files --outdir {wildcards.sample} 2> {log}"
+        "fasterq-dump --progress --threads {threads} --split-files --outdir TestData {wildcards.sra} 2> {log}"

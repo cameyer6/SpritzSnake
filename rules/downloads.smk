@@ -58,16 +58,11 @@ rule filter_fa:
     output: "ensembl/202122.fa"
     script: "../scripts/filter_fasta.py"
 
-rule fakeout:
-    output: expand("TestData/{sra}.tmp", sra=config["sra"])
-    shell: "touch {output}"
-
 rule download_sras:
-    input: expand("TestData/{sra}.tmp", sra=config["sra"])
     output:
-        "TestData/{wildcards.sra}_1.fastq",
-        "TestData/{wildcards.sra}_2.fastq"
-    log: "TestData/{wildcards.sra}.log"
+        "TestData/{sra}_1.fastq",
+        "TestData/{sra}_2.fastq"
+    log: "TestData/{sra}.log"
     threads: 4
     shell:
         "fasterq-dump --progress --threads {threads} --split-files --outdir TestData {wildcards.sra} 2> {log}"

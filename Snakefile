@@ -2,7 +2,13 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        "TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.protein.withmods.xml"
+        "data/combined.spritz.tr.snpeff.protein.withmods.xml"
+
+rule clean:
+    shell:
+        "rm -rf data/ ChromosomeMappings/ SnpEff/ tmp/ fast.tmp/ && "
+        "cd GtfSharp && dotnet clean && cd .. && "
+        "cd TransferUniProtModifications && dotnet clean && cd .."
 
 include: "rules/downloads.smk"
 include: "rules/align.smk"

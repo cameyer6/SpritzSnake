@@ -1,6 +1,6 @@
 rule download_snpeff:
     output: "SnpEff/snpEff.config", "SnpEff/snpEff.jar"
-    log: "SnpEffInstall.log"
+    log: "data/SnpEffInstall.log"
     shell:
         """
         (git clone --depth=1 https://github.com/smith-chem-wisc/SnpEff
@@ -13,17 +13,17 @@ rule download_snpeff:
         mvn clean compile assembly:assembly
         mvn install:install-file -Dfile=target/SnpEff-$VERSION.jar -DgroupId=org.snpeff -DartifactId=SnpEff -Dversion=$VERSION -Dpackaging=jar -DgeneratePom=true --quiet
         cp target/SnpEff-$VERSION-jar-with-dependencies.jar snpEff.jar
-        cd ..) 2> {log}
+        cd ..) &> {log}
         """
 
 rule index_fa:
-    input: "ensembl/202122.fa"
-    output: "ensembl/202122.fa.fai"
-    shell: "samtools faidx ensembl/202122.fa"
+    input: "data/ensembl/202122.fa"
+    output: "data/ensembl/202122.fa.fai"
+    shell: "samtools faidx data/ensembl/202122.fa"
 
 rule dict_fa:
-    input: "ensembl/202122.fa"
-    output: "ensembl/202122.dict"
+    input: "data/ensembl/202122.fa"
+    output: "data/ensembl/202122.dict"
     shell: "gatk CreateSequenceDictionary -R {input} -O {output}"
 
 rule tmpdir:
@@ -32,22 +32,22 @@ rule tmpdir:
 
 rule hisat2_group_bam:
     input:
-        sorted="TestData/" + "_".join(config["sra"]) + ".sorted.bam",
+        sorted="data/combined.sorted.bam",
         tmp=directory("tmp")
     output:
-        grouped=temp("TestData/" + "_".join(config["sra"]) + ".sorted.grouped.bam"),
-        groupedidx=temp("TestData/" + "_".join(config["sra"]) + ".sorted.grouped.bam.bai")
+        grouped=temp("data/combined.sorted.grouped.bam"),
+        groupedidx=temp("data/combined.sorted.grouped.bam.bai")
     shell:
         "gatk AddOrReplaceReadGroups -PU platform  -PL illumina -SM sample -LB library -I {input.sorted} -O {output.grouped} -SO coordinate --TMP_DIR tmp && "
         "samtools index {output.grouped}"
 
 rule hisat2_mark_bam:
     input:
-        grouped="TestData/" + "_".join(config["sra"]) + ".sorted.grouped.bam",
+        grouped="data/combined.sorted.grouped.bam",
         tmp=directory("tmp")
     output:
-        marked="TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.bam",
-        metrics="TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.metrics"
+        marked="data/combined.sorted.grouped.marked.bam",
+        metrics="data/combined.sorted.grouped.marked.metrics"
     shell:
         "gatk MarkDuplicates -I {input.grouped} -O {output.marked} -M {output.metrics} --TMP_DIR tmp -AS true &&"
         "samtools index {output.marked}"
@@ -55,14 +55,14 @@ rule hisat2_mark_bam:
 # Checks if quality encoding is correct, and then splits n cigar reads
 rule split_n_cigar_reads:
     input:
-        bam="TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.bam",
-        fa="ensembl/202122.fa",
-        fai="ensembl/202122.fa.fai",
-        fadict="ensembl/202122.dict"
+        bam="data/combined.sorted.grouped.marked.bam",
+        fa="data/ensembl/202122.fa",
+        fai="data/ensembl/202122.fa.fai",
+        fadict="data/ensembl/202122.dict"
     output:
-        fixed=temp("TestData/" + "_".join(config["sra"]) + ".fixedQuals.bam"),
-        split=temp("TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.bam"),
-        splitidx=temp("TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.bam.bai")
+        fixed=temp("data/combined.fixedQuals.bam"),
+        split=temp("data/combined.sorted.grouped.marked.split.bam"),
+        splitidx=temp("data/combined.sorted.grouped.marked.split.bam.bai")
     threads: 1
     shell:
         "gatk FixMisencodedBaseQualityReads -I {input.bam} -O {output.fixed} && "
@@ -72,13 +72,13 @@ rule split_n_cigar_reads:
 
 rule base_recalibration:
     input:
-        knownsites="ensembl/common_all_20170710.ensembl.vcf",
-        knownsitesidx="ensembl/common_all_20170710.ensembl.vcf.idx",
-        fa="ensembl/202122.fa",
-        bam="TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.bam"
+        knownsites="data/ensembl/common_all_20170710.ensembl.vcf",
+        knownsitesidx="data/ensembl/common_all_20170710.ensembl.vcf.idx",
+        fa="data/ensembl/202122.fa",
+        bam="data/combined.sorted.grouped.marked.split.bam"
     output:
-        recaltable=temp("TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.recaltable"),
-        recalbam=temp("TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.recal.bam")
+        recaltable=temp("data/combined.sorted.grouped.marked.split.recaltable"),
+        recalbam=temp("data/combined.sorted.grouped.marked.split.recal.bam")
     threads: 1
     shell:
         """
@@ -89,11 +89,11 @@ rule base_recalibration:
 
 rule call_gvcf_varaints:
     input:
-        knownsites="ensembl/common_all_20170710.ensembl.vcf",
-        knownsitesidx="ensembl/common_all_20170710.ensembl.vcf.idx",
-        fa="ensembl/202122.fa",
-        bam="TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.recal.bam"
-    output: temp("TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.recal.g.vcf.gz"),
+        knownsites="data/ensembl/common_all_20170710.ensembl.vcf",
+        knownsitesidx="data/ensembl/common_all_20170710.ensembl.vcf.idx",
+        fa="data/ensembl/202122.fa",
+        bam="data/combined.sorted.grouped.marked.split.recal.bam"
+    output: temp("data/combined.sorted.grouped.marked.split.recal.g.vcf.gz"),
     threads: 4
     shell:
         "gatk HaplotypeCaller"
@@ -106,9 +106,9 @@ rule call_gvcf_varaints:
 
 rule call_vcf_variants:
     input:
-        fa="ensembl/202122.fa",
-        gvcf="TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.recal.g.vcf.gz",
-    output: "TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.recal.g.gt.vcf" # renamed in next rule
+        fa="data/ensembl/202122.fa",
+        gvcf="data/combined.sorted.grouped.marked.split.recal.g.vcf.gz",
+    output: "data/combined.sorted.grouped.marked.split.recal.g.gt.vcf" # renamed in next rule
     shell:
         """
         gatk GenotypeGVCFs -R {input.fa} -V {input.gvcf} -O {output}
@@ -116,16 +116,16 @@ rule call_vcf_variants:
         """
 
 rule final_vcf_naming:
-    input: "TestData/" + "_".join(config["sra"]) + ".sorted.grouped.marked.split.recal.g.gt.vcf"
-    output: "TestData/" + "_".join(config["sra"]) + ".spritz.vcf"
+    input: "data/combined.sorted.grouped.marked.split.recal.g.gt.vcf"
+    output: "data/combined.spritz.vcf"
     shell: "mv {input} {output}"
 
 rule filter_indels:
     input:
-        fa="ensembl/202122.fa",
-        vcf="TestData/" + "_".join(config["sra"]) + ".spritz.vcf"
+        fa="data/ensembl/202122.fa",
+        vcf="data/combined.spritz.vcf"
     output:
-        "TestData/" + "_".join(config["sra"]) + ".spritz.noindels.vcf"
+        "data/combined.spritz.noindels.vcf"
     shell:
         """
         gatk SelectVariants --select-type-to-exclude INDEL -R {input.fa} -V {input.vcf} -O {output}
@@ -142,7 +142,7 @@ rule snpeff_database_setup:
         jar="SnpEff/snpEff.jar",
         config="SnpEff/snpEff.config"
     output:
-        "SnpEffDatabases.txt"
+        "data/SnpEffDatabases.txt"
     params:
         ref="GRCh38.86"
     shell:
@@ -155,20 +155,20 @@ rule snpeff_database_setup:
 
 rule variant_annotation_ref:
     input:
-        "SnpEffDatabases.txt",
+        "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
-        fa="ensembl/202122.fa",
-        vcf="TestData/" + "_".join(config["sra"]) + ".spritz.vcf",
+        fa="data/ensembl/202122.fa",
+        vcf="data/combined.spritz.vcf",
     output:
-        ann="TestData/" + "_".join(config["sra"]) + ".spritz.snpeff.vcf",
-        html="TestData/" + "_".join(config["sra"]) + ".spritz.snpeff.html",
-        genesummary="TestData/" + "_".join(config["sra"]) + ".spritz.snpeff.genes.txt",
-        protfa="TestData/" + "_".join(config["sra"]) + ".spritz.snpeff.protein.fasta",
-        protxml="TestData/" + "_".join(config["sra"]) + ".spritz.snpeff.protein.xml",
+        ann="data/combined.spritz.snpeff.vcf",
+        html="data/combined.spritz.snpeff.html",
+        genesummary="data/combined.spritz.snpeff.genes.txt",
+        protfa="data/combined.spritz.snpeff.protein.fasta",
+        protxml="data/combined.spritz.snpeff.protein.xml",
     params:
         ref="GRCh38.86"
     log:
-        "TestData/" + "_".join(config["sra"]) + ".spritz.snpeff.log"
+        "data/combined.spritz.snpeff.log"
     shell:
         "(java -Xmx5000M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml} {params.ref}"
@@ -176,21 +176,21 @@ rule variant_annotation_ref:
 
 rule variant_annotation_custom:
     input:
-        "SnpEffDatabases.txt",
+        "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
-        fa="ensembl/202122.fa",
-        vcf="TestData/" + "_".join(config["sra"]) + ".spritz.vcf",
-        trigger_isoform_reconstruction="SnpEff/data/" + "_".join(config["sra"]) + ".sorted.filtered.withcds.gtf/genes.gtf"
+        fa="data/ensembl/202122.fa",
+        vcf="data/combined.spritz.vcf",
+        trigger_isoform_reconstruction="SnpEff/data/combined.sorted.filtered.withcds.gtf/genes.gtf"
     output:
-        ann="TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.vcf",
-        html="TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.html",
-        genesummary="TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.genes.txt",
-        protfa="TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.protein.fasta",
-        protxml="TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.protein.xml",
+        ann="data/combined.spritz.tr.snpeff.vcf",
+        html="data/combined.spritz.tr.snpeff.html",
+        genesummary="data/combined.spritz.tr.snpeff.genes.txt",
+        protfa="data/combined.spritz.tr.snpeff.protein.fasta",
+        protxml="data/combined.spritz.tr.snpeff.protein.xml",
     params:
         ref="GRCh38.86"
     log:
-        "TestData/" + "_".join(config["sra"]) + ".spritz.tr.snpeff.log"
+        "data/combined.spritz.tr.snpeff.log"
     shell:
         "(java -Xmx5000M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml} {params.ref}"

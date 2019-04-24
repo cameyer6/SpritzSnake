@@ -1,71 +1,60 @@
-rule download_genome_fasta:
-    output: "ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-    shell:
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz | "
-        "gunzip -c > ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-
-rule download_gene_model:
-    output: "ensembl/Homo_sapiens.GRCh38.81.gff3"
-    shell:
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens.GRCh38.81.gff3.gz | "
-        "gunzip -c > ensembl/Homo_sapiens.GRCh38.81.gff3"
-
-rule download_protein_fasta:
-    output: "ensembl/Homo_sapiens.GRCh38.pep.all.fa"
-    shell:
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz | "
-        "gunzip -c > ensembl/Homo_sapiens.GRCh38.pep.all.fa"
-
-rule download_common_known_variants:
+rule download_ensembl_references:
     output:
-        "ensembl/common_all_20170710.vcf",
-        "ensembl/common_all_20170710.vcf.idx"
+        gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
+        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3",
+        pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
+        vcf="data/ensembl/common_all_20170710.vcf",
+        vcfidx="data/ensembl/common_all_20170710.vcf.idx"
+    log: "data/ensembl/downloads.log"
     shell:
+        "(wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz | "
+        "gunzip -c > {output.gfa} && "
+        "wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens.GRCh38.81.gff3.gz | "
+        "gunzip -c > {output.gff} && "
+        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz | "
+        "gunzip -c > {output.pfa} && "
         "wget -O - ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh38p7/VCF/GATK/common_all_20170710.vcf.gz | "
-        "gunzip -c > ensembl/common_all_20170710.vcf;"
-        "gatk IndexFeatureFile -F ensembl/common_all_20170710.vcf"
+        "gunzip -c > {output.vcf} && "
+        "gatk IndexFeatureFile -F {output.vcf}) 2> {log}"
 
 rule download_chromosome_mappings:
     output: "ChromosomeMappings/GRCh38_UCSC2ensembl.txt"
     shell: "git clone https://github.com/dpryan79/ChromosomeMappings.git"
 
 rule reorder_genome_fasta:
-    input: "ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-    output: "ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
+    input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+    output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
     script: "../scripts/karyotypic_order.py"
 
 rule convert_ucsc2ensembl:
     input:
-        "ensembl/common_all_20170710.vcf",
+        "data/ensembl/common_all_20170710.vcf",
         "ChromosomeMappings/GRCh38_UCSC2ensembl.txt"
     output:
-        "ensembl/common_all_20170710.ensembl.vcf",
+        "data/ensembl/common_all_20170710.ensembl.vcf",
     script:
         "../scripts/convert_ucsc2ensembl.py"
 
 rule index_ucsc2ensembl:
-    input: "ensembl/common_all_20170710.ensembl.vcf"
-    output: "ensembl/common_all_20170710.ensembl.vcf.idx"
+    input: "data/ensembl/common_all_20170710.ensembl.vcf"
+    output: "data/ensembl/common_all_20170710.ensembl.vcf.idx"
     shell: "gatk IndexFeatureFile -F {input}"
 
 rule filter_gff3:
-    input: "ensembl/Homo_sapiens.GRCh38.81.gff3"
-    output: "ensembl/202122.gff3"
-    shell: "grep \"^#\|20\|^21\|^22\" \"ensembl/Homo_sapiens.GRCh38.81.gff3\" > \"ensembl/202122.gff3\""
+    input: "data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+    output: "data/ensembl/202122.gff3"
+    shell: "grep \"^#\|20\|^21\|^22\" \"data/ensembl/Homo_sapiens.GRCh38.81.gff3\" > \"data/ensembl/202122.gff3\""
 
 rule filter_fa:
-    input: "ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-    output: "ensembl/202122.fa"
-    script: "scripts/filter_fasta.py"
+    input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+    output: "data/ensembl/202122.fa"
+    script: "../scripts/filter_fasta.py"
 
 rule download_sras:
-    # input: lambda wildcards: config["sra"][wildcards.sample]
     output:
-        "TestData/ERR315327_1.fastq"
-        # "fastqs/{sample}_1.fastq"
-        # "fastqs/{sample}_2.fastq"
-    log:
-        "TestData/ERR315327.log"
+        "data/{sra}_1.fastq",
+        "data/{sra}_2.fastq"
+    log: "data/{sra}.log"
     threads: 4
     shell:
-        "fasterq-dump --progress --threads {threads} --split-files --outdir TestData ERR315327 2> {log}"
+        "fasterq-dump --progress --threads {threads} --split-files --outdir data {wildcards.sra} 2> {log}"

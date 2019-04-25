@@ -1,7 +1,7 @@
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-fasta_sequences = SeqIO.parse(open("ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"),'fasta')
+fasta_sequences = SeqIO.parse(open("data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"),'fasta')
 
 ordered = []
 chrn = range(1, 23)
@@ -28,6 +28,6 @@ ordered.extend(gl)
 ordered.extend(ki)
 ordered.extend(other)
 
-with open("ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa","w") as out:
+with open("data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa","w") as out:
     for seq in ordered:
         out.write(seq.format("fasta"))

@@ -2,12 +2,9 @@ _STARtmp
 ensembl
 STAR*
 2.7.0e*
-TestData/mapper0.*am
 .snakemake
-TestData/mapper0.split.bam.bai
 ChromosomeMappings
-TestData/SRR7685050*
-TestData/ERR*
+data/
 SnpEff
 tmp
 snpEffDatabases.txt

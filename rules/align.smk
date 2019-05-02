@@ -42,7 +42,6 @@ def input_fq_args(fastqs):
     else:
         return f"-1 {fqs[0]} -2 {fqs[1]}"
 
-# send fastq files instead
 rule hisat2_align_bam:
     input:
         "data/ensembl/202122.1.ht2",
@@ -50,12 +49,12 @@ rule hisat2_align_bam:
         fq2="data/{sra}_2.fastq" if 'sra' in config and config["sra"] is not None else expand("data/{fq2}_2.fastq", fq2=config["fq2"]),
         ss="data/ensembl/202122.splicesites.txt"
     output:
-        sorted="data/{sra}.sorted.bam" if 'sra' in config and config["sra"] is "" else "data/{fq1}.sorted.bam",
+        sorted="data/{sra}.sorted.bam" if 'sra' in config and config["sra"] is not None else "data/{fq1}.sorted.bam",
     threads: 12
     params:
         compression="9",
-        tempprefix="data/{sra}.sorted" if 'sra' in config and config["sra"] is "" else "data/{fq1}.sorted",
-    log: "data/{sra}.hisat2.log" if 'sra' in config and config["sra"] is "" else "data/{fq1}.hisat2.log"
+        tempprefix="data/{sra}.sorted" if 'sra' in config and config["sra"] is not None else "data/{fq1}.sorted",
+    log: "data/{sra}.hisat2.log" if 'sra' in config and config["sra"] is not None else "data/{fq1}.hisat2.log"
     shell:
         "(hisat2 -p {threads} -x data/ensembl/202122 -1 {input.fq1} -2 {input.fq2} --known-splicesite-infile {input.ss} | " # align the suckers
         "samtools view -h -F4 - | " # get mapped reads only

@@ -17,13 +17,13 @@ rule download_snpeff:
         """
 
 rule index_fa:
-    input: "data/ensembl/202122.fa"
-    output: "data/ensembl/202122.fa.fai"
-    shell: "samtools faidx data/ensembl/202122.fa"
+    input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
+    output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa.fai"
+    shell: "samtools faidx data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
 
 rule dict_fa:
-    input: "data/ensembl/202122.fa"
-    output: "data/ensembl/202122.dict"
+    input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
+    output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.dict"
     shell: "gatk CreateSequenceDictionary -R {input} -O {output}"
 
 rule tmpdir:
@@ -56,9 +56,9 @@ rule hisat2_mark_bam:
 rule split_n_cigar_reads:
     input:
         bam="data/combined.sorted.grouped.marked.bam",
-        fa="data/ensembl/202122.fa",
-        fai="data/ensembl/202122.fa.fai",
-        fadict="data/ensembl/202122.dict"
+        fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
+        fai="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa.fai",
+        fadict="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.dict"
     output:
         fixed=temp("data/combined.fixedQuals.bam"),
         split=temp("data/combined.sorted.grouped.marked.split.bam"),
@@ -74,7 +74,7 @@ rule base_recalibration:
     input:
         knownsites="data/ensembl/common_all_20170710.ensembl.vcf",
         knownsitesidx="data/ensembl/common_all_20170710.ensembl.vcf.idx",
-        fa="data/ensembl/202122.fa",
+        fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         bam="data/combined.sorted.grouped.marked.split.bam"
     output:
         recaltable=temp("data/combined.sorted.grouped.marked.split.recaltable"),
@@ -91,7 +91,7 @@ rule call_gvcf_varaints:
     input:
         knownsites="data/ensembl/common_all_20170710.ensembl.vcf",
         knownsitesidx="data/ensembl/common_all_20170710.ensembl.vcf.idx",
-        fa="data/ensembl/202122.fa",
+        fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         bam="data/combined.sorted.grouped.marked.split.recal.bam"
     output: temp("data/combined.sorted.grouped.marked.split.recal.g.vcf.gz"),
     threads: 4
@@ -106,7 +106,7 @@ rule call_gvcf_varaints:
 
 rule call_vcf_variants:
     input:
-        fa="data/ensembl/202122.fa",
+        fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         gvcf="data/combined.sorted.grouped.marked.split.recal.g.vcf.gz",
     output: "data/combined.sorted.grouped.marked.split.recal.g.gt.vcf" # renamed in next rule
     shell:
@@ -122,7 +122,7 @@ rule final_vcf_naming:
 
 rule filter_indels:
     input:
-        fa="data/ensembl/202122.fa",
+        fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         vcf="data/combined.spritz.vcf"
     output:
         "data/combined.spritz.noindels.vcf"
@@ -146,52 +146,39 @@ rule snpeff_database_setup:
     params:
         ref="GRCh38.86"
     shell:
-        "java -Xmx2000M -jar {input.jar} databases > {output} &&"
-        "echo \"\n# {params.ref}\" >> SnpEff/snpEff.config"
-        "echo \"# {params.ref}.genome : Human genome GRCh38 using RefSeq transcripts\" >> SnpEff/snpEff.config"
-        "echo \"# {params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config"
-        "echo \"# {params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config"
-        "echo \"# {params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config"
+        "java -Xmx2000M -jar {input.jar} databases > {output} && "
+        "echo \"\n# {params.ref}\" >> SnpEff/snpEff.config && "
+        "echo \"\n{params.ref}.genome : Human genome GRCh38 using RefSeq transcripts\" >> SnpEff/snpEff.config && "
+        "echo \"\n{params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config && "
+        "echo \"\n\t{params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config && "
+        "echo \"\n\t{params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config"
 
-rule variant_annotation_ref:
+rule variant_annotation:
     input:
         "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
-        fa="data/ensembl/202122.fa",
+        fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         vcf="data/combined.spritz.vcf",
+        isoform_reconstruction="SnpEff/data/combined.sorted.filtered.withcds.gtf/genes.gtf"
     output:
-        ann="data/combined.spritz.snpeff.vcf",
-        html="data/combined.spritz.snpeff.html",
-        genesummary="data/combined.spritz.snpeff.genes.txt",
-        protfa="data/combined.spritz.snpeff.protein.fasta",
-        protxml="data/combined.spritz.snpeff.protein.xml",
+        ann=["data/combined.spritz.snpeff.vcf", "data/combined.spritz.isoformed.snpeff.vcf"],
+        html=["data/combined.spritz.snpeff.html", "data/combined.spritz.isoformed.snpeff.html"],
+        genesummary=["data/combined.spritz.snpeff.genes.txt", "data/combined.spritz.isoformed.snpeff.genes.txt"],
+        protfa=["data/combined.spritz.snpeff.protein.fasta", "data/combined.spritz.isoformed.snpeff.protein.fasta"],
+        protxml=["data/combined.spritz.snpeff.protein.xml", "data/combined.spritz.isoformed.snpeff.protein.xml"]
     params:
-        ref="GRCh38.86"
+        ref_no_isoform="GRCh38.86", # no isoform reconstruction
+        ref_isoform="combined.sorted.filtered.withcds.gtf" # with isoforms
+    resources:
+        mem_mb=16000
     log:
         "data/combined.spritz.snpeff.log"
     shell:
-        "(java -Xmx5000M -jar {input.snpeff} -v -stats {output.html}"
-        " -fastaProt {output.protfa} -xmlProt {output.protxml} {params.ref}"
-        " {input.vcf} > {output.ann}) 2> {log}"
-
-rule variant_annotation_custom:
-    input:
-        "data/SnpEffDatabases.txt",
-        snpeff="SnpEff/snpEff.jar",
-        fa="data/ensembl/202122.fa",
-        vcf="data/combined.spritz.vcf",
-        trigger_isoform_reconstruction="SnpEff/data/combined.sorted.filtered.withcds.gtf/genes.gtf"
-    output:
-        ann="data/combined.spritz.tr.snpeff.vcf",
-        html="data/combined.spritz.tr.snpeff.html",
-        genesummary="data/combined.spritz.tr.snpeff.genes.txt",
-        protfa="data/combined.spritz.tr.snpeff.protein.fasta",
-        protxml="data/combined.spritz.tr.snpeff.protein.xml",
-    params:
-        ref="GRCh38.86"
-    log:
-        "data/combined.spritz.tr.snpeff.log"
-    shell:
-        "(java -Xmx5000M -jar {input.snpeff} -v -stats {output.html}"
-        " -fastaProt {output.protfa} -xmlProt {output.protxml} {params.ref}"
-        " {input.vcf} > {output.ann}) 2> {log}"
+        "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html[0]}"
+        " -fastaProt {output.protfa[0]} -xmlProt {output.protxml[0]}"
+        " {params.ref_no_isoform}" # no isoforms
+        " {input.vcf} > {output.ann[0]} && "
+        "java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html[1]}"
+        " -fastaProt {output.protfa[1]} -xmlProt {output.protxml[1]}"
+        " {params.ref_isoform}" # with isoforms
+        " {input.vcf} > {output.ann[1]}) 2> {log}"

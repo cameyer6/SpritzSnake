@@ -1,8 +1,8 @@
 import os
 
 rule directories:
-    output: directory("data/ensembl/202122/")
-    shell: "mkdir -p data/ensembl/202122/"
+    output: directory("data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic/")
+    shell: "mkdir -p data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic/"
 
 rule star_setup:
     output: "STAR-2.6.0c/bin/Linux_x86_64/STAR"
@@ -16,23 +16,23 @@ rule star_genome_generate:
         star="STAR-2.7.0e/bin/Linux_x86_64/STAR",
         genomeDir=directory("data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic"),
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        gff="data/ensembl/202122.gff3"
+        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3"
     output:
-        "data/ensembl/202122/SA"
+        "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic/SA"
     shell:
         "{input.star} --runMode genomeGenerate --runThreadN {threads} --genomeDir {input.genomeDir} "
         "--genomeFastaFiles {input.fa} --sjdbGTFfile {input.gff} --sjdbGTFtagExonParentTranscript Parent --sjdbOverhang 100"
 
 rule hisat_genome:
     input:
-        fa="data/ensembl/202122.fa",
-        gtf="data/ensembl/202122.gff3"
-    output: "data/ensembl/202122.1.ht2"
-    shell: "hisat2-build data/ensembl/202122.fa data/ensembl/202122"
+        fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
+        gtf="data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+    output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.1.ht2"
+    shell: "hisat2-build data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic"
 
 rule hisat2_splice_sites:
-    input: "data/ensembl/202122.gff3"
-    output: "data/ensembl/202122.splicesites.txt"
+    input: "data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+    output: "data/ensembl/Homo_sapiens.GRCh38.81.splicesites.txt"
     shell: "hisat2_extract_splice_sites.py {input} > {output}"
 
 def input_fq_args(fastqs):
@@ -44,10 +44,10 @@ def input_fq_args(fastqs):
 
 rule hisat2_align_bam:
     input:
-        "data/ensembl/202122.1.ht2",
+        "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.1.ht2",
         fq1="data/{sra}_1.fastq" if 'sra' in config and config["sra"] is not None else expand("data/{fq1}_1.fastq", fq1=config["fq1"]),
         fq2="data/{sra}_2.fastq" if 'sra' in config and config["sra"] is not None else expand("data/{fq2}_2.fastq", fq2=config["fq2"]),
-        ss="data/ensembl/202122.splicesites.txt"
+        ss="data/ensembl/Homo_sapiens.GRCh38.81.splicesites.txt"
     output:
         sorted="data/{sra}.sorted.bam" if 'sra' in config and config["sra"] is not None else "data/{fq1}.sorted.bam",
     threads: 12
@@ -56,7 +56,7 @@ rule hisat2_align_bam:
         tempprefix="data/{sra}.sorted" if 'sra' in config and config["sra"] is not None else "data/{fq1}.sorted",
     log: "data/{sra}.hisat2.log" if 'sra' in config and config["sra"] is not None else "data/{fq1}.hisat2.log"
     shell:
-        "(hisat2 -p {threads} -x data/ensembl/202122 -1 {input.fq1} -2 {input.fq2} --known-splicesite-infile {input.ss} | " # align the suckers
+        "(hisat2 -p {threads} -x data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic -1 {input.fq1} -2 {input.fq2} --known-splicesite-infile {input.ss} | " # align the suckers
         "samtools view -h -F4 - | " # get mapped reads only
         "samtools sort -l {params.compression} -T {params.tempprefix} -o {output.sorted} -) 2> {log} && " # sort them
         "samtools index {output}"

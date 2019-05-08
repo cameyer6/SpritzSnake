@@ -52,8 +52,8 @@ rule filter_fa:
 
 rule download_sras:
     output:
-        "data/{sra}_1.fastq",
-        "data/{sra}_2.fastq"
+        "data/{sra,[A-Z0-9]+}_1.fastq", # constrain wildcards, so it doesn't soak up SRR######.trim_1.fastq
+        "data/{sra,[A-Z0-9]+}_2.fastq"
     log: "data/{sra}.log"
     threads: 4
     shell:

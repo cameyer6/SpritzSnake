@@ -1,21 +1,24 @@
 rule download_adapters:
     output:
         temp(directory("BBMap")),
-        "adapters.fa"
-    shell: "git clone --depth 1 https://github.com/BioInfoTools/BBMap.git && cp BBMap/resources/adapters.fa ."
+        "data/qc/adapters.fa"
+    shell: "git clone --depth 1 https://github.com/BioInfoTools/BBMap.git && cp BBMap/resources/adapters.fa data/qc"
 
 rule skewer:
     input:
         fq1="data/{sra}_1.fastq",
         fq2="data/{sra}_2.fastq",
-        adapters="adapters.fa"
+        adapters="data/qc/adapters.fa"
     output:
         fq1="data/trimmed/{sra}.trim_1.fastq",
         fq2="data/trimmed/{sra}.trim_2.fastq"
     threads: 6
     log: "data/trimmed/{sra}-trimmed.status"
+    params:
+        quality=20
     shell:
-        "skewer -q 19 -o data/trimmed/{wildcards.sra} -t {threads} -x {input.adapters} {input.fq1} {input.fq2} &> {log} && "
+        "skewer -q {params.quality} -o data/trimmed/{wildcards.sra}"
+        " -t {threads} -x {input.adapters} {input.fq1} {input.fq2} &> {log} && "
         "mv data/trimmed/{wildcards.sra}-trimmed-pair1.fastq data/trimmed/{wildcards.sra}.trim_1.fastq &&"
         "mv data/trimmed/{wildcards.sra}-trimmed-pair2.fastq data/trimmed/{wildcards.sra}.trim_2.fastq"
 

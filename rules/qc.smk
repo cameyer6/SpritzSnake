@@ -16,8 +16,8 @@ rule skewer:
     log: "{dir}/trimmed/{sra}-trimmed.status"
     shell:
         "skewer -q 19 -o {dir}/trimmed/{wildcards.sra} -t {threads} -x {input.adapters} {input.fq1} {input.fq2} &> {log} && "
-        "mv {dir}/trimmed/{wildcards.sra}-trimmed-pair1.fastq {dir}/trimmed/{wildcards.sra}.trim_1.fastq &&"
-        "mv {dir}/trimmed/{wildcards.sra}-trimmed-pair2.fastq {dir}/trimmed/{wildcards.sra}.trim_2.fastq"
+        "mv {wildcards.dir}/trimmed/{wildcards.sra}-trimmed-pair1.fastq {wildcards.dir}/trimmed/{wildcards.sra}.trim_1.fastq &&"
+        "mv {wildcards.dir}/trimmed/{wildcards.sra}-trimmed-pair2.fastq {wildcards.dir}/trimmed/{wildcards.sra}.trim_2.fastq"
 
 rule fastqc_analysis:
     input:

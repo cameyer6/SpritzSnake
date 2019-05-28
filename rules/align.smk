@@ -51,16 +51,16 @@ def check_sra():
 rule hisat2_align_bam:
     input:
         "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.1.ht2",
-        fq1="data/{sra}_1.fastq" if check_sra() is True else expand("data/{fq1}_1.fastq", fq1=config["fq1"]),
-        fq2="data/{sra}_2.fastq" if check_sra() is True else expand("data/{fq2}_2.fastq", fq2=config["fq2"]),
+        fq1="{dir}/{sra}_1.fastq" if check_sra() is True else expand("{{dir}}/{fq1}_1.fastq", fq1=config["fq1"]),
+        fq2="{dir}/{sra}_2.fastq" if check_sra() is True else expand("{{dir}}/{fq2}_2.fastq", fq2=config["fq2"]),
         ss="data/ensembl/Homo_sapiens.GRCh38.81.splicesites.txt"
     output:
-        sorted="data/{sra}.sorted.bam" if check_sra() is True else "data/{fq1}.sorted.bam",
+        sorted="{dir}/{sra}.sorted.bam" if check_sra() is True else "{dir}/{fq1}.sorted.bam",
     threads: 12
     params:
         compression="9",
-        tempprefix="data/{sra}.sorted" if check_sra() is True else "data/{fq1}.sorted",
-    log: "data/{sra}.hisat2.log" if check_sra() is True else "data/{fq1}.hisat2.log"
+        tempprefix="{dir}/{sra}.sorted" if check_sra() is True else "{dir}/{fq1}.sorted",
+    log: "{dir}/{sra}.hisat2.log" if check_sra() is True else "{dir}/{fq1}.hisat2.log"
     shell:
         "(hisat2 -p {threads} -x data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic -1 {input.fq1} -2 {input.fq2} --known-splicesite-infile {input.ss} | " # align the suckers
         "samtools view -h -F4 - | " # get mapped reads only
@@ -69,13 +69,13 @@ rule hisat2_align_bam:
 
 rule hisat2_merge_bams:
     input:
-        bams=expand("data/{sra}.sorted.bam", sra=config["sra"]) if check_sra() is True else expand("data/{fq1}.sorted.bam", fq1=config["fq1"])
+        bams=expand("{{dir}}/{sra}.sorted.bam", sra=config["sra"]) if check_sra() is True else expand("{{dir}}/{fq1}.sorted.bam", fq1=config["fq1"])
     output:
-        sorted="data/combined.sorted.bam"
+        sorted="{dir}/combined.sorted.bam"
     params:
         compression="9",
-        tempprefix="data/combined.sorted"
-    log: "data/combined.sorted.log"
+        tempprefix="{dir}/combined.sorted"
+    log: "{dir}/combined.sorted.log"
     shell:
         "(ls {input.bams} | "
         "{{ read firstbam; "

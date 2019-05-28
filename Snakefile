@@ -2,7 +2,7 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        ["data/combined.spritz.snpeff.protein.xml", "data/combined.spritz.isoformed.snpeff.protein.xml"]
+        expand(["{dir}/combined.spritz.snpeff.protein.xml", "{dir}/combined.spritz.isoformed.snpeff.protein.xml"], dir=config["analysisDirectory"])
 
 rule clean:
     shell:

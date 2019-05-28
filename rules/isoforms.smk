@@ -34,6 +34,7 @@ rule filter_transcripts_add_cds:
 
 rule generate_snpeff_database:
     input:
+        jar="SnpEff/snpEff.jar",
         gtf="data/combined.sorted.filtered.withcds.gtf",
         pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
         gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
@@ -43,14 +44,19 @@ rule generate_snpeff_database:
         gfa="SnpEff/data/genomes/combined.sorted.filtered.withcds.gtf.fa",
     params:
         ref="combined.sorted.filtered.withcds.gtf"
+    resources:
+        mem_mb=16000
+    log:
+        "data/combined.sorted.filtered.withcds.snpeffdatabase.log"
     shell:
         """
         cp {input.gtf} {output.gtf}
         cp {input.pfa} {output.pfa}
         cp {input.gfa} {output.gfa}
         echo \"\n# {params.ref}\" >> SnpEff/snpEff.config
-        echo \"\n{params.ref}.genome : Human genome GRCh38 using RefSeq transcripts\" >> SnpEff/snpEff.config
-        echo \"\n{params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config
-        echo \"\n\t{params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
-        echo \"\n\t{params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
+        echo \"{params.ref}.genome : Human genome GRCh38 using RefSeq transcripts\" >> SnpEff/snpEff.config
+        echo \"{params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config
+        echo \"\t{params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
+        echo \"\t{params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
+        (java -Xmx{resources.mem_mb}M -jar {input.jar} build -gtf22 -v {params.ref}) 2> {log}
         """

@@ -12,7 +12,7 @@ rule skewer:
     output:
         fq1="data/trimmed/{sra}.trim_1.fastq",
         fq2="data/trimmed/{sra}.trim_2.fastq"
-    threads: 6
+    threads: 12
     log: "data/trimmed/{sra}-trimmed.status"
     params:
         quality=20

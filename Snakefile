@@ -2,7 +2,11 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        ["data/combined.spritz.snpeff.protein.xml", "data/combined.spritz.isoformed.snpeff.protein.xml"]
+        "data/combined.spritz.snpeff.protein.withmods.xml",
+        "data/combined.spritz.isoform.protein.withmods.xml",
+        "data/GRCh38.86.protein.withmods.xml",
+        "data/combined.spritz.isoformvariants.protein.withmods.xml",
+        # "clean_snpeff"
 
 rule clean:
     shell:

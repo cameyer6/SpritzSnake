@@ -27,8 +27,9 @@ rule hisat_genome:
     input:
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         gtf="data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+    threads: 12
     output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.1.ht2"
-    shell: "hisat2-build data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic"
+    shell: "hisat2-build -p {threads} data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic"
 
 rule hisat2_splice_sites:
     input: "data/ensembl/Homo_sapiens.GRCh38.81.gff3"

@@ -40,10 +40,14 @@ rule hisat2_groupmark_bam:
         marked="data/combined.sorted.grouped.marked.bam",
         markedidx="data/combined.sorted.grouped.marked.bam.bai",
         metrics="data/combined.sorted.grouped.marked.metrics"
+    resources:
+        mem_mb=16000
+    params:
+        java_options="--java-options \"-Xmx{resources.mem_mb}M -Dsamjdk.compression_level=9\""
     shell:
-        "gatk AddOrReplaceReadGroups -PU platform  -PL illumina -SM sample -LB library -I {input.sorted} -O {output.grouped} -SO coordinate --TMP_DIR {input.tmp} && "
+        "gatk {params.java_options} AddOrReplaceReadGroups -PU platform  -PL illumina -SM sample -LB library -I {input.sorted} -O {output.grouped} -SO coordinate --TMP_DIR {input.tmp} && "
         "samtools index {output.grouped} && "
-        "gatk MarkDuplicates -I {output.grouped} -O {output.marked} -M {output.metrics} --TMP_DIR {input.tmp} -AS true &&"
+        "gatk {params.java_options} MarkDuplicates -I {output.grouped} -O {output.marked} -M {output.metrics} --TMP_DIR {input.tmp} -AS true &&"
         "samtools index {output.marked}"
 
 # Checks if quality encoding is correct, and then splits n cigar reads
@@ -58,10 +62,14 @@ rule split_n_cigar_reads:
         fixed=temp("data/combined.fixedQuals.bam"),
         split=temp("data/combined.sorted.grouped.marked.split.bam"),
         splitidx=temp("data/combined.sorted.grouped.marked.split.bam.bai")
+    resources:
+        mem_mb=16000
+    params:
+        java_options="--java-options \"-Xmx{resources.mem_mb}M -Dsamjdk.compression_level=9\""
     shell:
-        "gatk FixMisencodedBaseQualityReads -I {input.bam} -O {output.fixed} && "
-        "gatk SplitNCigarReads -R {input.fa} -I {output.fixed} -O {output.split} --tmp-dir {input.tmp} || " # fix and split
-        "gatk SplitNCigarReads -R {input.fa} -I {input.bam} -O {output.split} --tmp-dir {input.tmp}; " # or just split
+        "gatk {params.java_options} FixMisencodedBaseQualityReads -I {input.bam} -O {output.fixed} && "
+        "gatk {params.java_options} SplitNCigarReads -R {input.fa} -I {output.fixed} -O {output.split} --tmp-dir {input.tmp} || " # fix and split
+        "gatk {params.java_options} SplitNCigarReads -R {input.fa} -I {input.bam} -O {output.split} --tmp-dir {input.tmp}; " # or just split
         "samtools index {output.split}" # always index
 
 rule base_recalibration:
@@ -74,11 +82,14 @@ rule base_recalibration:
     output:
         recaltable=temp("data/combined.sorted.grouped.marked.split.recaltable"),
         recalbam=temp("data/combined.sorted.grouped.marked.split.recal.bam")
-    threads: 1
+    resources:
+        mem_mb=16000
+    params:
+        java_options="--java-options \"-Xmx{resources.mem_mb}M -Dsamjdk.compression_level=9\""
     shell:
         """
-        gatk BaseRecalibrator -R {input.fa} -I {input.bam} --known-sites {input.knownsites} -O {output.recaltable} --tmp-dir {input.tmp}
-        gatk ApplyBQSR -R {input.fa} -I {input.bam} --bqsr-recal-file {output.recaltable} -O {output.recalbam} --tmp-dir {input.tmp}
+        gatk {params.java_options} BaseRecalibrator -R {input.fa} -I {input.bam} --known-sites {input.knownsites} -O {output.recaltable} --tmp-dir {input.tmp}
+        gatk {params.java_options} ApplyBQSR -R {input.fa} -I {input.bam} --bqsr-recal-file {output.recaltable} -O {output.recalbam} --tmp-dir {input.tmp}
         samtools index {output.recalbam}
         """
 
@@ -90,9 +101,13 @@ rule call_gvcf_varaints:
         bam="data/combined.sorted.grouped.marked.split.recal.bam",
         tmp=directory("tmp")
     output: temp("data/combined.sorted.grouped.marked.split.recal.g.vcf.gz"),
-    threads: 4
+    threads: 12
+    resources:
+        mem_mb=16000
+    params:
+        java_options="--java-options \"-Xmx{resources.mem_mb}M -Dsamjdk.compression_level=9\""
     shell:
-        "gatk HaplotypeCaller"
+        "gatk {params.java_options} HaplotypeCaller"
         " --native-pair-hmm-threads {threads}"
         " -R {input.fa} -I {input.bam}"
         " --min-base-quality-score 20 --dont-use-soft-clipped-bases true"
@@ -106,9 +121,13 @@ rule call_vcf_variants:
         gvcf="data/combined.sorted.grouped.marked.split.recal.g.vcf.gz",
         tmp=directory("tmp")
     output: "data/combined.sorted.grouped.marked.split.recal.g.gt.vcf" # renamed in next rule
+    resources:
+        mem_mb=16000
+    params:
+        java_options="--java-options \"-Xmx{resources.mem_mb}M -Dsamjdk.compression_level=9\""
     shell:
         """
-        gatk GenotypeGVCFs -R {input.fa} -V {input.gvcf} -O {output} --tmp-dir {input.tmp}
+        gatk {params.java_options} GenotypeGVCFs -R {input.fa} -V {input.gvcf} -O {output} --tmp-dir {input.tmp}
         gatk IndexFeatureFile -F {output}
         """
 
@@ -142,8 +161,10 @@ rule snpeff_database_setup:
         "data/SnpEffDatabases.txt"
     params:
         ref="GRCh38.86"
+    resources:
+        mem_mb=16000
     shell:
-        "java -Xmx2000M -jar {input.jar} databases > {output} && "
+        "java -Xmx{resources.mem_mb}M -jar {input.jar} databases > {output} && "
         "echo \"\n# {params.ref}\" >> SnpEff/snpEff.config && "
         "echo \"{params.ref}.genome : Human genome GRCh38 using RefSeq transcripts\" >> SnpEff/snpEff.config && "
         "echo \"{params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config && "

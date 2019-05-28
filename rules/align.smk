@@ -53,8 +53,8 @@ rule hisat2_align_bam:
     input:
         "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.1.ht2",
         "data/trimmed/{sra}.trim_1_fastqc.html", # trigger QC analysis after trimming
-        fq1="data/trimmed/{sra}.trim_1.fastq" if check_sra() is True else expand("data/{fq1}_1.fastq", fq1=config["fq1"]),
-        fq2="data/trimmed/{sra}.trim_2.fastq" if check_sra() is True else expand("data/{fq2}_2.fastq", fq2=config["fq2"]),
+        fq1="data/trimmed/{sra}.trim_1.fastq.gz" if check_sra() is True else expand("data/{fq1}_1.fastq.gz", fq1=config["fq1"]),
+        fq2="data/trimmed/{sra}.trim_2.fastq.gz" if check_sra() is True else expand("data/{fq2}_2.fastq.gz", fq2=config["fq2"]),
         ss="data/ensembl/Homo_sapiens.GRCh38.81.splicesites.txt"
     output:
         sorted="data/{sra}.sorted.bam" if check_sra() is True else "data/{fq1}.sorted.bam",

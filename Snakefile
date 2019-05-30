@@ -1,8 +1,17 @@
 configfile: "config.yaml"
 
+def check_dir():
+    if ('analysisDirectory' in config and config["analysisDirectory"] is not None) and len(config["analysisDirectory"]) > 0:
+            return True
+    return False
+
+def output(wildcards):
+     if check_dir():
+         return expand(["{dir}/combined.spritz.snpeff.protein.xml", "{dir}/combined.spritz.isoformed.snpeff.protein.xml"], dir=config["analysisDirectory"])
+     return expand(["output/combined.spritz.snpeff.protein.xml", "output/combined.spritz.isoformed.snpeff.protein.xml"])
+
 rule all:
-    input:
-        expand(["{dir}/combined.spritz.snpeff.protein.xml", "{dir}/combined.spritz.isoformed.snpeff.protein.xml"], dir=config["analysisDirectory"])
+    input: output
 
 rule clean:
     shell:

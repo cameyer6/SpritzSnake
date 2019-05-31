@@ -13,4 +13,6 @@ dependencies:
   - biopython
   - git
   - maven
+  - fastqc
+  - skewer
   #- vcftools =0.1.15

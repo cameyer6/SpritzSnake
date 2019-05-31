@@ -52,9 +52,19 @@ rule filter_fa:
 
 rule download_sras:
     output:
-        "data/{sra}_1.fastq",
-        "data/{sra}_2.fastq"
+        temp("data/{sra,[A-Z0-9]+}_1.fastq"), # constrain wildcards, so it doesn't soak up SRR######.trim_1.fastq
+        temp("data/{sra,[A-Z0-9]+}_2.fastq")
     log: "data/{sra}.log"
     threads: 4
     shell:
         "fasterq-dump --progress --threads {threads} --split-files --outdir data {wildcards.sra} 2> {log}"
+
+rule compress_fastqs:
+    input:
+        temp("data/{sra,[A-Z0-9]+}_1.fastq"),
+        temp("data/{sra,[A-Z0-9]+}_2.fastq")
+    output:
+        "data/{sra,[A-Z0-9]+}_1.fastq.gz",
+        "data/{sra,[A-Z0-9]+}_2.fastq.gz"
+    shell:
+        "gzip {input}"

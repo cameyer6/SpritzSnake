@@ -1,10 +1,11 @@
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-fasta_sequences = SeqIO.parse(open("data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"),'fasta')
+
+fa = "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
 
 ordered = []
-chrn = range(1, 23)
+chrn = [str(x) for x in range(1, 23)]
 chrs = []
 x = ""
 y = ""
@@ -12,7 +13,7 @@ m = ""
 gl = []
 ki = []
 other = []
-for seq in fasta_sequences:
+for seq in SeqIO.parse(open(fa),'fasta'):
     if seq.id.split(" ")[0] in chrn: chrs.append(seq)
     elif seq.id.split(" ")[0].startswith("X"): x = seq
     elif seq.id.split(" ")[0].startswith("Y"): y = seq
@@ -20,6 +21,7 @@ for seq in fasta_sequences:
     elif seq.id.split(" ")[0].startswith("GL"): gl.append(seq)
     elif seq.id.split(" ")[0].startswith("KI"): ki.append(seq)
     else: other.append(seq)
+chrs.sort(key = lambda seq: int(seq.id.split(" ")[0]))
 ordered.extend(chrs)
 ordered.append(x)
 ordered.append(y)

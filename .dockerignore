@@ -1,4 +1,4 @@
-TestData
+data
 tmp
 STAR*
 SnpEff
@@ -7,3 +7,6 @@ ChromosomeMappings
 .snakemake
 snpEffDatabases.txt
 human.proteome.xml
+ptmlist.txt
+adapters.fa
+fast.tmp

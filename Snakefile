@@ -7,8 +7,8 @@ def check_dir():
 
 def output(wildcards):
      if check_dir():
-         return expand(["{dir}/combined.spritz.snpeff.protein.xml", "{dir}/combined.spritz.isoformed.snpeff.protein.xml"], dir=config["analysisDirectory"])
-     return expand(["output/combined.spritz.snpeff.protein.xml", "output/combined.spritz.isoformed.snpeff.protein.xml"])
+         return expand(["{dir}/combined.spritz.snpeff.protein.withmods.xml", "{dir}/combined.spritz.isoform.protein.withmods.xml", "{dir}/GRCh38.86.protein.withmods.xml", "{dir}/combined.spritz.isoformvariants.protein.withmods.xml"], dir=config["analysisDirectory"])
+     return expand(["output/combined.spritz.snpeff.protein.withmods.xml", "output/combined.spritz.isoform.protein.withmods.xml", "output/GRCh38.86.protein.withmods.xml", "output/combined.spritz.isoformvariants.protein.withmods.xml"])
 
 rule all:
     input: output

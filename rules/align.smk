@@ -27,8 +27,9 @@ rule hisat_genome:
     input:
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         gtf="data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+    threads: 12
     output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.1.ht2"
-    shell: "hisat2-build data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic"
+    shell: "hisat2-build -p {threads} data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic"
 
 rule hisat2_splice_sites:
     input: "data/ensembl/Homo_sapiens.GRCh38.81.gff3"
@@ -50,8 +51,9 @@ def check_sra():
 rule hisat2_align_bam:
     input:
         "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.1.ht2",
-        fq1="{dir}/{sra}_1.fastq" if check_sra() else expand("{{dir}}/{fq1}_1.fastq", fq1=config["fq1"]),
-        fq2="{dir}/{sra}_2.fastq" if check_sra() else expand("{{dir}}/{fq2}_2.fastq", fq2=config["fq2"]),
+        "{dir}/trimmed/{sra}.trim_1_fastqc.html" if check_sra() else expand("{{dir}}/trimmed/{fq}.trim_1_fastqc.html", fq=config["fq1"]), # trigger QC analysis after trimming
+        fq1="{dir}/trimmed/{sra}.trim_1.fastq.gz" if check_sra() else expand("{{dir}}/{fq1}_1.fastq.gz", fq1=config["fq1"]),
+        fq2="{dir}/trimmed/{sra}.trim_2.fastq.gz" if check_sra() else expand("{{dir}}/{fq2}_2.fastq.gz", fq2=config["fq2"]),
         ss="data/ensembl/Homo_sapiens.GRCh38.81.splicesites.txt"
     output:
         sorted="{dir}/{sra}.sorted.bam" if check_sra() else "{dir}/{fq1}.sorted.bam",

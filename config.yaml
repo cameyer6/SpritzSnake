@@ -1,7 +1,8 @@
 ### Using SRAs
-sra: ["SRX791580"]
-# sra: ["SRR791578", "SRR791579", "SRR791580", "SRR791581", "SRR791582", "SRR791583", "SRR791584", "SRR791585", "SRR791586"]
+# sra: ["ERR315327","ERR315394"] # testing
+sra: ["SRR791578", "SRR791579", "SRR791580", "SRR791581", "SRR791582", "SRR791583", "SRR791584", "SRR791585", "SRR791586"] # jurkat
 # sra: ["SRR2153519", "SRR2153520"] # mcf7
+# sra: ["ERR579133", "ERR579135", "ERR579139"] # tonsil
 
 ### Using FASTQs
 # sra: [] #  can leave empty sras as 1) empty list 2) undefined/null

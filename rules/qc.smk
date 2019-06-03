@@ -17,7 +17,7 @@ rule skewer:
     params:
         quality=20
     shell:
-        "skewer -q {params.quality} -o data/trimmed/{wildcards.sra}"
+        "skewer -q {params.quality} -o {wildcards.sra}/trimmed/{wildcards.sra}"
         " -t {threads} -x {input.adapters} {input.fq1} {input.fq2} &> {log} && "
         "mv {wildcards.dir}/trimmed/{wildcards.sra}-trimmed-pair1.fastq {wildcards.dir}/trimmed/{wildcards.sra}.trim_1.fastq &&"
         "mv {wildcards.dir}/trimmed/{wildcards.sra}-trimmed-pair2.fastq {wildcards.dir}/trimmed/{wildcards.sra}.trim_2.fastq &&"

@@ -200,20 +200,20 @@ rule variant_annotation_custom:
         "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        vcf="data/combined.spritz.vcf",
+        vcf="{dir}/combined.spritz.vcf",
         isoform_reconstruction="SnpEff/data/combined.sorted.filtered.withcds.gtf/genes.gtf"
     output:
-        ann="data/combined.spritz.isoformvariants.vcf",
-        html="data/combined.spritz.isoformvariants.html",
-        genesummary="data/combined.spritz.isoformvariants.genes.txt",
-        protfa="data/combined.spritz.isoformvariants.protein.fasta",
-        protxml="data/combined.spritz.isoformvariants.protein.xml"
+        ann="{dir}/combined.spritz.isoformvariants.vcf",
+        html="{dir}/combined.spritz.isoformvariants.html",
+        genesummary="{dir}/combined.spritz.isoformvariants.genes.txt",
+        protfa="{dir}/combined.spritz.isoformvariants.protein.fasta",
+        protxml="{dir}/combined.spritz.isoformvariants.protein.xml"
     params:
         ref="combined.sorted.filtered.withcds.gtf" # with isoforms
     resources:
         mem_mb=16000
     log:
-        "data/combined.spritz.isoformvariants.log"
+        "{dir}/combined.spritz.isoformvariants.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml}"

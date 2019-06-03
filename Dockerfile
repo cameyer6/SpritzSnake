@@ -22,6 +22,7 @@ RUN conda init \
 	&& conda update conda \
 	&& conda env create --name spritz --file environment.yaml
 
+# add script to execute snakemake upon activate
 ADD start.sh /usr/local/envs/spritz/etc/conda/activate.d/start.sh
 RUN chmod 777 /usr/local/envs/spritz/etc/conda/activate.d/start.sh
 

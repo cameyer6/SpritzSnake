@@ -17,9 +17,9 @@ rule transfer_modifications_variant:
     input:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
-        protxml="data/combined.spritz.snpeff.protein.xml"
+        protxml="{dir}/combined.spritz.snpeff.protein.xml"
     output:
-        protxml="data/combined.spritz.snpeff.protein.withmods.xml"
+        protxml="{dir}/combined.spritz.snpeff.protein.withmods.xml"
     shell:
         "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml}"
 
@@ -27,9 +27,9 @@ rule transfer_modifications_isoformvariant:
     input:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
-        protxml="data/combined.spritz.isoformvariants.protein.xml"
+        protxml="{dir}/combined.spritz.isoformvariants.protein.xml"
     output:
-        protxml="data/combined.spritz.isoformvariants.protein.withmods.xml"
+        protxml="{dir}/combined.spritz.isoformvariants.protein.withmods.xml"
     shell:
         "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml}"
 
@@ -44,14 +44,14 @@ rule reference_protein_xml:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
     output:
-        protxml="data/GRCh38.86.protein.xml",
-        protxmlwithmods="data/GRCh38.86.protein.withmods.xml",
+        protxml="{dir}/GRCh38.86.protein.xml",
+        protxmlwithmods="{dir}/GRCh38.86.protein.withmods.xml",
     params:
         ref="GRCh38.86", # no isoform reconstruction
     resources:
         mem_mb=16000
     log:
-        "data/GRCh38.86.spritz.log"
+        "{dir}/GRCh38.86.spritz.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # no isoforms, no variants
@@ -69,14 +69,14 @@ rule custom_protein_xml:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
     output:
-        protxml="data/combined.spritz.isoform.protein.xml",
-        protxmlwithmods="data/combined.spritz.isoform.protein.withmods.xml"
+        protxml="{dir}/combined.spritz.isoform.protein.xml",
+        protxmlwithmods="{dir}/combined.spritz.isoform.protein.withmods.xml"
     params:
         ref="combined.sorted.filtered.withcds.gtf" # with isoforms
     resources:
         mem_mb=16000
     log:
-        "data/combined.spritz.isoform.log"
+        "{dir}/combined.spritz.isoform.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # isoforms, no variants

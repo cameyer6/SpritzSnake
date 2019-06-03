@@ -45,7 +45,7 @@ def input_fq_args(fastqs):
 
 def check_sra():
     if ('sra' in config and config["sra"] is not None) and len(config["sra"]) > 0:
-            return True
+        return True
     return False
 
 rule hisat2_align_bam:
@@ -56,7 +56,7 @@ rule hisat2_align_bam:
         fq2="{dir}/trimmed/{sra}.trim_2.fastq.gz" if check_sra() else expand("{{dir}}/{fq2}_2.fastq.gz", fq2=config["fq2"]),
         ss="data/ensembl/Homo_sapiens.GRCh38.81.splicesites.txt"
     output:
-        sorted="{dir}/{sra}.sorted.bam" if check_sra() else "{dir}/{fq1}.sorted.bam",
+        sorted="{dir}/{sra}.sorted.bam" if check_sra() else "{dir}/{fq1,[A-Z0-9]+}.sorted.bam",
     threads: 12
     params:
         compression="9",

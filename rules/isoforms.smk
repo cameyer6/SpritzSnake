@@ -6,7 +6,7 @@ rule assemble_transcripts:
     threads: 12
     log: "data/combined.sorted.gtf.log"
     shell:
-        "stringtie {input.bam} -p {threads} -G {input.gff} -o {output} 2> {log} && " # strandedness: --fr for forwared or --rf for reverse
+        "stringtie {input.bam} -p {threads} -G {input.gff} -o {output} 2> {log}" # strandedness: --fr for forwared or --rf for reverse
 
 # rule filter_gtf_entries_without_strand
 #     input: "data/ERR315327.sorted.gtf"

@@ -19,9 +19,10 @@ rule transfer_modifications_variant:
         unixml=UNIPROTXML,
         protxml="{dir}/combined.spritz.snpeff.protein.xml"
     output:
-        protxml="{dir}/combined.spritz.snpeff.protein.withmods.xml"
+        protxml=temp("{dir}/combined.spritz.snpeff.protein.withmods.xml"),
+        protxmlgz="{dir}/combined.spritz.snpeff.protein.withmods.xml.gz"
     shell:
-        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml}"
+        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip {input.protxml}"
 
 rule transfer_modifications_isoformvariant:
     input:
@@ -29,9 +30,10 @@ rule transfer_modifications_isoformvariant:
         unixml=UNIPROTXML,
         protxml="{dir}/combined.spritz.isoformvariants.protein.xml"
     output:
-        protxml="{dir}/combined.spritz.isoformvariants.protein.withmods.xml"
+        protxml=temp("{dir}/combined.spritz.isoformvariants.protein.withmods.xml"),
+        protxmlgz="{dir}/combined.spritz.isoformvariants.protein.withmods.xml.gz"
     shell:
-        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml}"
+        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip {output.protxml}"
 
 rule reference_protein_xml:
     """
@@ -44,8 +46,10 @@ rule reference_protein_xml:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
     output:
-        protxml="{dir}/GRCh38.86.protein.xml",
-        protxmlwithmods="{dir}/GRCh38.86.protein.withmods.xml",
+        protxml=temp("{dir}/GRCh38.86.protein.xml"),
+        protxmlgz="{dir}/GRCh38.86.protein.xml.gz",
+        protxmlwithmods=temp("{dir}/GRCh38.86.protein.withmods.xml"),
+        protxmlwithmodsgz="{dir}/GRCh38.86.protein.withmods.xml.gz",
     params:
         ref="GRCh38.86", # no isoform reconstruction
     resources:
@@ -55,7 +59,8 @@ rule reference_protein_xml:
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # no isoforms, no variants
-        "dotnet {input.transfermods} -x {input.unixml} -y {output.protxml}"
+        "dotnet {input.transfermods} -x {input.unixml} -y {output.protxml} && "
+        "gzip {output.protxmlwithmods} {output.protxml}"
 
 rule custom_protein_xml:
     """
@@ -69,8 +74,10 @@ rule custom_protein_xml:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
     output:
-        protxml="{dir}/combined.spritz.isoform.protein.xml",
-        protxmlwithmods="{dir}/combined.spritz.isoform.protein.withmods.xml"
+        protxml=temp("{dir}/combined.spritz.isoform.protein.xml"),
+        protxmlgz="{dir}/combined.spritz.isoform.protein.xml.gz",
+        protxmlwithmods=temp("{dir}/combined.spritz.isoform.protein.withmods.xml"),
+        protxmlwithmodsgz="{dir}/combined.spritz.isoform.protein.withmods.xml.gz"
     params:
         ref="combined.sorted.filtered.withcds.gtf" # with isoforms
     resources:
@@ -80,4 +87,5 @@ rule custom_protein_xml:
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # isoforms, no variants
-        "dotnet {input.transfermods} -x {input.unixml} -y {output.protxml}"
+        "dotnet {input.transfermods} -x {input.unixml} -y {output.protxml} &&"
+        "gzip {output.protxmlwithmods} {output.protxml}"

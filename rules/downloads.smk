@@ -17,26 +17,6 @@ rule download_ensembl_references:
         "gunzip -c > {output.vcf} && "
         "gatk IndexFeatureFile -F {output.vcf}) 2> {log}"
 
-rule unzip_ensembl:
-    input:
-        gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz",
-        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3.gz",
-        pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa.gz",
-        vcf="data/ensembl/common_all_20170710.vcf.gz",
-        vcfidx="data/ensembl/common_all_20170710.vcf.idx.gz"
-    output:
-        gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
-        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3",
-        pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
-        vcf="data/ensembl/common_all_20170710.vcf",
-        vcfidx="data/ensembl/common_all_20170710.vcf.idx"
-    shell:
-        "gunzip -c {input.gfa} > {output.gfa} && "
-        "gunzip -c {input.gff} > {output.gff} && "
-        "gunzip -c {input.pfa} > {output.pfa} && "
-        "gunzip -c {input.vcf} > {output.vcf} && "
-        "gunzip -c {input.vcfidx} > {output.vcfidx} "
-
 rule download_chromosome_mappings:
     output: "ChromosomeMappings/GRCh38_UCSC2ensembl.txt"
     shell: "git clone https://github.com/dpryan79/ChromosomeMappings.git"
@@ -72,19 +52,19 @@ rule filter_fa:
 
 rule download_sras:
     output:
-        temp("{dir}/{sra,[A-Z0-9]+}_1.fastq"), # constrain wildcards, so it doesn't soak up SRR######.trim_1.fastq
-        temp("{dir}/{sra,[A-Z0-9]+}_2.fastq")
-    log: "{dir}/{sra}.log"
+        temp("data/{sra,[A-Z0-9]+}_1.fastq"), # constrain wildcards, so it doesn't soak up SRR######.trim_1.fastq
+        temp("data/{sra,[A-Z0-9]+}_2.fastq")
+    log: "data/{sra}.log"
     threads: 4
     shell:
-        "fasterq-dump --progress --threads {threads} --split-files --outdir {wildcards.dir} {wildcards.sra} 2> {log}"
+        "fasterq-dump --progress --threads {threads} --split-files --outdir data {wildcards.sra} 2> {log}"
 
 rule compress_fastqs:
     input:
-        temp("{dir}/{sra,[A-Z0-9]+}_1.fastq"),
-        temp("{dir}/{sra,[A-Z0-9]+}_2.fastq")
+        temp("data/{sra,[A-Z0-9]+}_1.fastq"),
+        temp("data/{sra,[A-Z0-9]+}_2.fastq")
     output:
-        "{dir}/{sra,[A-Z0-9]+}_1.fastq.gz",
-        "{dir}/{sra,[A-Z0-9]+}_2.fastq.gz"
+        "data/{sra,[A-Z0-9]+}_1.fastq.gz",
+        "data/{sra,[A-Z0-9]+}_2.fastq.gz"
     shell:
         "gzip {input}"

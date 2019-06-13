@@ -14,6 +14,7 @@ RUN apt-get update -y && \
 	&& apt-get install -y apt-transport-https \
 	&& apt-get update -y \
 	&& apt-get install -y dotnet-sdk-2.2
+	
 
 # install Spritz
 WORKDIR /app
@@ -22,10 +23,6 @@ RUN conda init \
 	&& conda update conda \
 	&& conda env create --name spritz --file environment.yaml
 
-# add script to execute snakemake upon activate
-ADD start.sh /usr/local/envs/spritz/etc/conda/activate.d/start.sh
-RUN chmod 777 /usr/local/envs/spritz/etc/conda/activate.d/start.sh
-
-# activate environment
-RUN echo "source activate spritz" > ~/.bashrc
-ENV PATH /opt/conda/envs/spritz/bin:$PATH
+# Activating environment
+# When running spritz, "conda activate spritz" should preceed a command
+# I've had trouble running `conda activate` after `conda init` in the docker build

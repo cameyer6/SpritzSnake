@@ -217,58 +217,58 @@ rule variant_annotation_custom:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml}"
         " {params.ref} {input.vcf}" # with isoforms and variants
-        " > {output.ann}) 2> {log} && gzip {output.protxml}"
+        " > {output.ann}) 2> {log} && gzip -k {output.protxml}"
 
 rule variant_annotation_ref_noindel:
     input:
         "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        vcf="data/combined.spritz.noindels.vcf",
+        vcf="{dir}/combined.spritz.noindels.vcf",
     output:
-        ann="data/combined.spritz.noindels.snpeff.vcf",
-        html="data/combined.spritz.noindels.snpeff.html",
-        genesummary="data/combined.spritz.noindels.snpeff.genes.txt",
-        protfa="data/combined.spritz.snpeff.noindels.protein.fasta",
-        protxml=temp("data/combined.spritz.snpeff.noindels.noindels.protein.xml"),
-        protxmlgz="data/combined.spritz.snpeff.noindels.noindels.protein.xml.gz"
+        ann="{dir}/combined.spritz.noindels.snpeff.vcf",
+        html="{dir}/combined.spritz.noindels.snpeff.html",
+        genesummary="{dir}/combined.spritz.noindels.snpeff.genes.txt",
+        protfa="{dir}/combined.spritz.snpeff.noindels.protein.fasta",
+        protxml=temp("{dir}/combined.spritz.snpeff.noindels.protein.xml"),
+        protxmlgz="{dir}/combined.spritz.snpeff.noindels.protein.xml.gz"
     params:
         ref="GRCh38.86", # no isoform reconstruction
     resources:
         mem_mb=16000
     log:
-        "data/combined.spritz.snpeff.log"
+        "{dir}/combined.spritz.snpeff.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml} "
         " {params.ref} {input.vcf}" # no isoforms, with variants
-        " > {output.ann}) 2> {log} && gzip {output.protxml}"
+        " > {output.ann}) 2> {log} && gzip -k {output.protxml}"
 
 rule variant_annotation_custom_noindel:
     input:
         "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        vcf="data/combined.spritz.noindels.vcf",
+        vcf="{dir}/combined.spritz.noindels.vcf",
         isoform_reconstruction="SnpEff/data/combined.sorted.filtered.withcds.gtf/genes.gtf"
     output:
-        ann="data/combined.spritz.noindels.isoformvariants.vcf",
-        html="data/combined.spritz.noindels.isoformvariants.html",
-        genesummary="data/combined.spritz.noindels.noindels.isoformvariants.genes.txt",
-        protfa="data/combined.spritz.noindels.isoformvariants.protein.fasta",
-        protxml=temp("data/combined.spritz.noindels.noindels.isoformvariants.protein.xml"),
-        protxmlgz="data/combined.spritz.noindels.isoformvariants.protein.xml.gz",
+        ann="{dir}/combined.spritz.noindels.isoformvariants.vcf",
+        html="{dir}/combined.spritz.noindels.isoformvariants.html",
+        genesummary="{dir}/combined.spritz.noindels.noindels.isoformvariants.genes.txt",
+        protfa="{dir}/combined.spritz.noindels.isoformvariants.protein.fasta",
+        protxml=temp("{dir}/combined.spritz.noindels.noindels.isoformvariants.protein.xml"),
+        protxmlgz="{dir}/combined.spritz.noindels.isoformvariants.protein.xml.gz",
     params:
         ref="combined.sorted.filtered.withcds.gtf" # with isoforms
     resources:
         mem_mb=16000
     log:
-        "data/combined.spritz.isoformvariants.log"
+        "{dir}/combined.spritz.isoformvariants.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml}"
         " {params.ref} {input.vcf}" # with isoforms and variants
-        " > {output.ann}) 2> {log} && gzip {output.protxml}"
+        " > {output.ann}) 2> {log} && gzip -k {output.protxml}"
 
 # rule cleanup_snpeff:
 #     input:

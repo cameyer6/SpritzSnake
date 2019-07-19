@@ -1,3 +1,17 @@
+GENOME_VERSION = "GRCh38"
+ENSEMBL_VERSION = "96"
+GENEMODEL_VERSION = GENOME_VERSION + "." + ENSEMBL_VERSION
+GENOME_FA = f"ensembl/Homo_sapiens.{GENOME_VERSION}.dna.primary_assembly.fa"
+ENSEMBL_GFF = f"ensembl/Homo_sapiens.{GENEMODEL_VERSION}.gff3"
+TEST_GENOME_FA = f"ensembl/202122.fa"
+TEST_ENSEMBL_GFF = f"ensembl/202122.gff3"
+FA=GENOME_FA # for analysis; can also be TEST_GENOME_FA
+GFF3=ENSEMBL_GFF # for analysis; can also be TEST_ENSEMBL_GFF
+REFSTAR_PREFIX = f"ensembl/Homo_sapiens.{GENEMODEL_VERSION}RsemStar/RsemStarReference"
+REFSTAR_FOLDER = f"ensembl/Homo_sapiens.{GENEMODEL_VERSION}RsemStar/"
+REF_PREFIX = f"ensembl/Homo_sapiens.{GENEMODEL_VERSION}Rsem/RsemReference"
+REF_FOLDER = f"ensembl/Homo_sapiens.{GENEMODEL_VERSION}Rsem/"
+
 configfile: "config.yaml"
 
 rule all:
@@ -22,3 +36,4 @@ include: "rules/variants.smk"
 include: "rules/isoforms.smk"
 include: "rules/proteogenomics.smk"
 include: "rules/qc.smk"
+include: "rules/quant.smk"

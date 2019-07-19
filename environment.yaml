@@ -4,7 +4,6 @@ channels:
 dependencies:
   - snakemake-minimal =5.2.4
   - python =3.6
-  - star =2.6.0c
   - gatk4 =4.0.11.0
   - hisat2 =2.1.0
   - samtools =1.9
@@ -15,4 +14,9 @@ dependencies:
   - maven
   - fastqc
   - skewer
+  - star =2.7.0f-0
+  - numpy
+  - biopython
+  - bcbio-gff
+  - pandas
   #- vcftools =0.1.15

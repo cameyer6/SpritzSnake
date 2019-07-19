@@ -1,17 +1,17 @@
 rule download_ensembl_references:
     output:
-        gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
-        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3",
-        pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
+        gfa=GENOME_FA,
+        gff=ENSEMBL_GFF,
+        pfa="data/ensembl/Homo_sapiens." + GENOME_VERSION + ".pep.all.fa",
         vcf="data/ensembl/common_all_20170710.vcf",
         vcfidx="data/ensembl/common_all_20170710.vcf.idx"
     log: "data/ensembl/downloads.log"
     shell:
-        "(wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz | "
+        "(wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.fa.gz | "
         "gunzip -c > {output.gfa} && "
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens.GRCh38.81.gff3.gz | "
+        "wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens." + GENEMODEL_VERSION + ".gff3.gz | "
         "gunzip -c > {output.gff} && "
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz | "
+        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens." + GENOME_VERSION + ".pep.all.fa.gz | "
         "gunzip -c > {output.pfa} && "
         "wget -O - ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh38p7/VCF/GATK/common_all_20170710.vcf.gz | "
         "gunzip -c > {output.vcf} && "
@@ -41,9 +41,15 @@ rule index_ucsc2ensembl:
     shell: "gatk IndexFeatureFile -F {input}"
 
 rule filter_gff3:
-    input: "data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+    input: ENSEMBL_GFF
     output: "data/ensembl/202122.gff3"
-    shell: "grep \"^#\|20\|^21\|^22\" \"data/ensembl/Homo_sapiens.GRCh38.81.gff3\" > \"data/ensembl/202122.gff3\""
+    shell: "grep \"^#\|^20\|^21\|^22\" \"data/ensembl/Homo_sapiens.GRCh38.81.gff3\" > \"data/ensembl/202122.gff3\""
+
+rule fix_gff3_for_rsem:
+    '''This script changes descriptive notes in column 4 to "gene" if a gene row, and it also adds ERCCs to the gene model'''
+    input: ENSEMBL_GFF
+    output: ENSEMBL_GFF + ".fix.gff3"
+    shell: "python scripts/fix_gff3_for_rsem.py {input} {output}"
 
 rule filter_fa:
     input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"

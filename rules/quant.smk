@@ -10,8 +10,7 @@ rule rsem_star_genome:
     resources: mem_mb=60000
     log: "ensembl/prepare-reference.log"
     shell:
-        "(rsem-prepare-reference --num-threads {threads} --star --gff3 {input.gff}"
-        " \"{input.gfa}\" " + REFSTAR_PREFIX +
+        "(rsem-prepare-reference --num-threads {threads} --star --gff3 {input.gff} \"{input.gfa}\" " + REFSTAR_PREFIX +
         ") 2> {log}"
 
 rule rsem_star_align:
@@ -30,7 +29,7 @@ rule rsem_star_align:
     threads: 12
     log: "output/{sra}calculate-expression.log"
     shell:
-        "(rsem-calculate-expression --no-bam-output --time --star --calc-ci"
+        "(rsem-calculate-expression --no-bam-output --time --star" # --calc-ci" not doing credibility intervals for now; they take a long time to calc.
         " --num-threads {threads} --paired-end <(zcat {input.fq1}) <(zcat {input.fq2}) " + REFSTAR_PREFIX + " output/{wildcards.sra}) &> {log}"
 
 rule make_rsem_dataframe:

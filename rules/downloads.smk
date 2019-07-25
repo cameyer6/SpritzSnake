@@ -7,11 +7,11 @@ rule download_ensembl_references:
         vcfidx="data/ensembl/common_all_20170710.vcf.idx"
     log: "data/ensembl/downloads.log"
     shell:
-        "(wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.fa.gz | "
+        "(wget -O - ftp://ftp.ensembl.org/pub/release-" + ENSEMBL_VERSION + "//fasta/homo_sapiens/dna/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.fa.gz | "
         "gunzip -c > {output.gfa} && "
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens." + GENEMODEL_VERSION + ".gff3.gz | "
+        "wget -O - ftp://ftp.ensembl.org/pub/release-" + ENSEMBL_VERSION + "/gff3/homo_sapiens/Homo_sapiens." + GENEMODEL_VERSION + ".gff3.gz | "
         "gunzip -c > {output.gff} && "
-        "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens." + GENOME_VERSION + ".pep.all.fa.gz | "
+        "wget -O - ftp://ftp.ensembl.org/pub/release-" + ENSEMBL_VERSION + "//fasta/homo_sapiens/pep/Homo_sapiens." + GENOME_VERSION + ".pep.all.fa.gz | "
         "gunzip -c > {output.pfa} && "
         "wget -O - ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh38p7/VCF/GATK/common_all_20170710.vcf.gz | "
         "gunzip -c > {output.vcf} && "
@@ -22,8 +22,8 @@ rule download_chromosome_mappings:
     shell: "git clone https://github.com/dpryan79/ChromosomeMappings.git"
 
 rule reorder_genome_fasta:
-    input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-    output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
+    input: "data/ensembl/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.fa"
+    output: "data/ensembl/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.karyotypic.fa"
     script: "../scripts/karyotypic_order.py"
 
 rule convert_ucsc2ensembl:

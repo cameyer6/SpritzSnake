@@ -44,18 +44,18 @@ tpms = [np.array(ids)]
 for file in files:
     counts.append(np.array([line.split('\t')[4] for line in open(file)]))
     tpms.append(np.array([line.split('\t')[5] for line in open(file)]))
-    print("reading "+ os.path.basename(file).split(".")[0].split("_")[0] + "_" + os.path.dirname(file).split("/")[-2].split("_")[-1])
+    print("reading "+ os.path.basename(file).split(".")[0])
 
 print(f"Saving to {outcounts} ...")
 dataframe = np.row_stack(counts)
-dataframe[1:,0] = [os.path.basename(file).split(".")[0].split("_")[0] + "_" + os.path.dirname(file).split("/")[-2].split("_")[-1] for file in files]
+dataframe[1:,0] = [os.path.basename(file).split(".")[0]]
 pddf = pd.DataFrame(dataframe[1:,1:], index=dataframe[1:,0], columns=dataframe[0,1:]).sort_index()
 pddf.filter(regex="ENSG").to_csv(outcounts)
 pddf.filter(regex="ERCC").to_csv(outcounts + ".ercc.csv")
 
 print(f"Saving to {outtpms} ...")
 dataframe = np.row_stack(tpms)
-dataframe[1:,0] = [os.path.basename(file).split(".")[0].split("_")[0] + "_" + os.path.dirname(file).split("/")[-2].split("_")[-1] for file in files]
+dataframe[1:,0] = [os.path.basename(file).split(".")[0] for file in files]
 pddf = pd.DataFrame(dataframe[1:,1:], index=dataframe[1:,0], columns=dataframe[0,1:]).sort_index()
 pddf.filter(regex="ENSG").to_csv(outtpms)
 pddf.filter(regex="ERCC").to_csv(outtpms + ".ercc.csv")

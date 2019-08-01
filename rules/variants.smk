@@ -205,8 +205,8 @@ rule variant_annotation_custom:
         protfa="{dir}/combined.spritz.isoformvariants.protein.fasta",
         protxml=temp("{dir}/combined.spritz.isoformvariants.protein.xml"),
         protxmlgz="{dir}/combined.spritz.isoformvariants.protein.xml.gz",
-        protnoindelxml=temp("{dir}/combined.spritz.noindels.isoformvariants.protein.xml"),
-        protnoindelxmlgz="{dir}/combined.spritz.noindels.isoformvariants.protein.xml.gz"
+        # protnoindelxml=temp("{dir}/combined.spritz.noindels.isoformvariants.protein.xml"),
+        # protnoindelxmlgz="{dir}/combined.spritz.noindels.isoformvariants.protein.xml.gz"
     params:
         ref="combined.sorted.filtered.withcds.gtf" # with isoforms
     resources:
@@ -256,7 +256,7 @@ rule variant_annotation_custom_noindel:
         html="{dir}/combined.spritz.noindels.isoformvariants.html",
         genesummary="{dir}/combined.spritz.noindels.noindels.isoformvariants.genes.txt",
         protfa="{dir}/combined.spritz.noindels.isoformvariants.protein.fasta",
-        protxml=temp("{dir}/combined.spritz.noindels.noindels.isoformvariants.protein.xml"),
+        protxml=temp("{dir}/combined.spritz.noindels.isoformvariants.protein.xml"),
         protxmlgz="{dir}/combined.spritz.noindels.isoformvariants.protein.xml.gz",
     params:
         ref="combined.sorted.filtered.withcds.gtf" # with isoforms

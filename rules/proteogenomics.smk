@@ -22,7 +22,7 @@ rule transfer_modifications_variant:
         protxml=temp("{dir}/combined.spritz.snpeff.protein.withmods.xml"),
         protxmlgz="{dir}/combined.spritz.snpeff.protein.withmods.xml.gz"
     shell:
-        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip -k {input.protxml}"
+        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip -k {output.protxml}" # typo
 
 rule transfer_modifications_isoformvariant:
     input:

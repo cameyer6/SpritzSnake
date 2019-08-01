@@ -10,7 +10,6 @@ def check_dir():
 #          return expand(["{dir}/combined.spritz.snpeff.protein.withmods.xml.gz", "{dir}/combined.spritz.noindels.snpeff.protein.withmods.xml.gz", "{dir}/combined.spritz.isoformvariants.protein.withmods.xml.gz", "{dir}/combined.spritz.noindels.isoformvariants.protein.withmods.xml.gz", "{dir}/combined.spritz.isoform.protein.withmods.xml.gz", "{dir}/GRCh38.86.protein.withmods.xml.gz"], dir=config["analysisDirectory"])
 #      return expand(["output/combined.spritz.snpeff.protein.withmods.xml.gz", "output/combined.spritz.noindels.snpeff.protein.withmods.xml.gz", "output/combined.spritz.isoformvariants.protein.withmods.xml.gz", "output/combined.spritz.noindels.isoformvariants.protein.withmods.xml.gz", "output/combined.spritz.isoform.protein.withmods.xml.gz", "output/GRCh38.86.protein.withmods.xml.gz"])
 
-# temporary
 def output(wildcards):
      if check_dir():
          return expand(["{dir}/combined.spritz.snpeff.protein.withmods.xml.gz", "{dir}/combined.spritz.isoformvariants.protein.withmods.xml.gz", "{dir}/combined.spritz.isoform.protein.withmods.xml.gz", "{dir}/GRCh38.86.protein.withmods.xml.gz"], dir=config["analysisDirectory"])
@@ -18,6 +17,8 @@ def output(wildcards):
 
 rule all:
     input: output
+
+# expand(["{dir}/GRCh38.86.protein.xml.gz", "{dir}/GRCh38.86.protein.withmods.xml.gz"], dir=config["analysisDirectory"])
 
 rule clean:
     shell:

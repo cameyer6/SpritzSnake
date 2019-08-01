@@ -16,7 +16,14 @@ def output(wildcards):
      return expand(["output/combined.spritz.snpeff.protein.withmods.xml.gz", "output/combined.spritz.isoformvariants.protein.withmods.xml.gz", "output/combined.spritz.isoform.protein.withmods.xml.gz", "output/GRCh38.86.protein.withmods.xml.gz"])
 
 rule all:
-    input: output
+    input:
+        "data/combined.spritz.snpeff.protein.withmods.xml.gz",
+        "data/combined.spritz.noindels.snpeff.protein.withmods.xml.gz",
+        "data/combined.spritz.isoformvariants.protein.withmods.xml.gz",
+        "data/combined.spritz.noindels.isoformvariants.protein.withmods.xml.gz",
+        "data/combined.spritz.isoform.protein.withmods.xml.gz", # no variants
+        "data/GRCh38.86.protein.withmods.xml.gz", # no variants
+        # "clean_snpeff"
 
 # expand(["{dir}/GRCh38.86.protein.xml.gz", "{dir}/GRCh38.86.protein.withmods.xml.gz"], dir=config["analysisDirectory"])
 

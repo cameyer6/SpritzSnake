@@ -1,11 +1,10 @@
 rule assemble_transcripts:
     input:
-        #bam=expand("{dir}/combined.sorted.bam", dir=config["analysisDirectory"]),
-        bam="{dir}/combined.sorted.bam",
+        bam="data/combined.sorted.bam",
         gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3"
-    output: "{dir}/combined.sorted.gtf"
+    output: "data/combined.sorted.gtf"
     threads: 12
-    log: "{dir}/combined.sorted.gtf.log"
+    log: "data/combined.sorted.gtf.log"
     shell:
         "stringtie {input.bam} -p {threads} -G {input.gff} -o {output} 2> {log}" # strandedness: --fr for forwared or --rf for reverse
 
@@ -25,19 +24,19 @@ rule build_gtf_sharp:
 rule filter_transcripts_add_cds:
     input:
         gtfsharp="GtfSharp/GtfSharp/bin/Release/netcoreapp2.1/GtfSharp.dll",
-        gtf="{dir}/combined.sorted.gtf",
+        gtf="data/combined.sorted.gtf",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         refg="data/ensembl/Homo_sapiens.GRCh38.81.gff3"
     output:
-        temp("{dir}/combined.sorted.filtered.gtf"),
-        "{dir}/combined.sorted.filtered.withcds.gtf",
+        temp("data/combined.sorted.filtered.gtf"),
+        "data/combined.sorted.filtered.withcds.gtf",
     shell:
         "dotnet {input.gtfsharp} -f {input.fa} -g {input.gtf} -r {input.refg}"
 
 rule generate_snpeff_database:
     input:
         jar="SnpEff/snpEff.jar",
-        gtf=expand("{dir}/combined.sorted.filtered.withcds.gtf", dir=config["analysisDirectory"]),
+        gtf="data/combined.sorted.filtered.withcds.gtf",
         pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
         gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
     output:

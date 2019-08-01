@@ -17,10 +17,10 @@ rule transfer_modifications_variant:
     input:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
-        protxml="{dir}/combined.spritz.snpeff.protein.xml"
+        protxml="data/combined.spritz.snpeff.protein.xml"
     output:
-        protxml=temp("{dir}/combined.spritz.snpeff.protein.withmods.xml"),
-        protxmlgz="{dir}/combined.spritz.snpeff.protein.withmods.xml.gz"
+        protxml=temp("data/combined.spritz.snpeff.protein.withmods.xml"),
+        protxmlgz="data/combined.spritz.snpeff.protein.withmods.xml.gz"
     shell:
         "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip -k {output.protxml}" # typo
 
@@ -28,10 +28,10 @@ rule transfer_modifications_isoformvariant:
     input:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
-        protxml="{dir}/combined.spritz.isoformvariants.protein.xml"
+        protxml="data/combined.spritz.isoformvariants.protein.xml"
     output:
-        protxml=temp("{dir}/combined.spritz.isoformvariants.protein.withmods.xml"),
-        protxmlgz="{dir}/combined.spritz.isoformvariants.protein.withmods.xml.gz"
+        protxml=temp("data/combined.spritz.isoformvariants.protein.withmods.xml"),
+        protxmlgz="data/combined.spritz.isoformvariants.protein.withmods.xml.gz"
     shell:
         "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip -k {output.protxml}"
 
@@ -46,16 +46,16 @@ rule reference_protein_xml:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
     output:
-        protxml=temp("{dir}/GRCh38.86.protein.xml"),
-        protxmlgz="{dir}/GRCh38.86.protein.xml.gz",
-        protxmlwithmods=temp("{dir}/GRCh38.86.protein.withmods.xml"),
-        protxmlwithmodsgz="{dir}/GRCh38.86.protein.withmods.xml.gz",
+        protxml=temp("data/GRCh38.86.protein.xml"),
+        protxmlgz="data/GRCh38.86.protein.xml.gz",
+        protxmlwithmods=temp("data/GRCh38.86.protein.withmods.xml"),
+        protxmlwithmodsgz="data/GRCh38.86.protein.withmods.xml.gz",
     params:
         ref="GRCh38.86", # no isoform reconstruction
     resources:
         mem_mb=16000
     log:
-        "{dir}/GRCh38.86.spritz.log"
+        "data/GRCh38.86.spritz.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # no isoforms, no variants
@@ -74,16 +74,16 @@ rule custom_protein_xml:
         transfermods=TRANSFER_MOD_DLL,
         unixml=UNIPROTXML,
     output:
-        protxml=temp("{dir}/combined.spritz.isoform.protein.xml"),
-        protxmlgz="{dir}/combined.spritz.isoform.protein.xml.gz",
-        protxmlwithmods=temp("{dir}/combined.spritz.isoform.protein.withmods.xml"),
-        protxmlwithmodsgz="{dir}/combined.spritz.isoform.protein.withmods.xml.gz"
+        protxml=temp("data/combined.spritz.isoform.protein.xml"),
+        protxmlgz="data/combined.spritz.isoform.protein.xml.gz",
+        protxmlwithmods=temp("data/combined.spritz.isoform.protein.withmods.xml"),
+        protxmlwithmodsgz="data/combined.spritz.isoform.protein.withmods.xml.gz"
     params:
         ref="combined.sorted.filtered.withcds.gtf" # with isoforms
     resources:
         mem_mb=16000
     log:
-        "{dir}/combined.spritz.isoform.log"
+        "data/combined.spritz.isoform.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # isoforms, no variants

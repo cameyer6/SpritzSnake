@@ -35,14 +35,14 @@ rule tmpdir:
 
 rule hisat2_groupmark_bam:
     input:
-        sorted="{dir}/combined.sorted.bam",
+        sorted="data/combined.sorted.bam",
         tmp=directory("tmp")
     output:
-        grouped=temp("{dir}/combined.sorted.grouped.bam"),
-        groupedidx=temp("{dir}/combined.sorted.grouped.bam.bai"),
-        marked="{dir}/combined.sorted.grouped.marked.bam",
-        markedidx="{dir}/combined.sorted.grouped.marked.bam.bai",
-        metrics="{dir}/combined.sorted.grouped.marked.metrics"
+        grouped=temp("data/combined.sorted.grouped.bam"),
+        groupedidx=temp("data/combined.sorted.grouped.bam.bai"),
+        marked="data/combined.sorted.grouped.marked.bam",
+        markedidx="data/combined.sorted.grouped.marked.bam.bai",
+        metrics="data/combined.sorted.grouped.marked.metrics"
     resources:
         mem_mb=GATK_MEM
     shell:
@@ -54,15 +54,15 @@ rule hisat2_groupmark_bam:
 # Checks if quality encoding is correct, and then splits n cigar reads
 rule split_n_cigar_reads:
     input:
-        bam="{dir}/combined.sorted.grouped.marked.bam",
+        bam="data/combined.sorted.grouped.marked.bam",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
         fai="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa.fai",
         fadict="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.dict",
         tmp=directory("tmp")
     output:
-        fixed=temp("{dir}/combined.fixedQuals.bam"),
-        split=temp("{dir}/combined.sorted.grouped.marked.split.bam"),
-        splitidx=temp("{dir}/combined.sorted.grouped.marked.split.bam.bai")
+        fixed=temp("data/combined.fixedQuals.bam"),
+        split=temp("data/combined.sorted.grouped.marked.split.bam"),
+        splitidx=temp("data/combined.sorted.grouped.marked.split.bam.bai")
     resources:
         mem_mb=GATK_MEM
     shell:
@@ -76,11 +76,11 @@ rule base_recalibration:
         knownsites="data/ensembl/common_all_20170710.ensembl.vcf",
         knownsitesidx="data/ensembl/common_all_20170710.ensembl.vcf.idx",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        bam="{dir}/combined.sorted.grouped.marked.split.bam",
+        bam="data/combined.sorted.grouped.marked.split.bam",
         tmp=directory("tmp")
     output:
-        recaltable=temp("{dir}/combined.sorted.grouped.marked.split.recaltable"),
-        recalbam=temp("{dir}/combined.sorted.grouped.marked.split.recal.bam")
+        recaltable=temp("data/combined.sorted.grouped.marked.split.recaltable"),
+        recalbam=temp("data/combined.sorted.grouped.marked.split.recal.bam")
     resources:
         mem_mb=GATK_MEM
     shell:
@@ -95,9 +95,9 @@ rule call_gvcf_varaints:
         knownsites="data/ensembl/common_all_20170710.ensembl.vcf",
         knownsitesidx="data/ensembl/common_all_20170710.ensembl.vcf.idx",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        bam="{dir}/combined.sorted.grouped.marked.split.recal.bam",
+        bam="data/combined.sorted.grouped.marked.split.recal.bam",
         tmp=directory("tmp")
-    output: temp("{dir}/combined.sorted.grouped.marked.split.recal.g.vcf.gz"),
+    output: temp("data/combined.sorted.grouped.marked.split.recal.g.vcf.gz"),
     threads: 8
         # HaplotypeCaller is only fairly efficient with threading;
         # ~14000 regions/min with 24 threads,
@@ -117,9 +117,9 @@ rule call_gvcf_varaints:
 rule call_vcf_variants:
     input:
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        gvcf="{dir}/combined.sorted.grouped.marked.split.recal.g.vcf.gz",
+        gvcf="data/combined.sorted.grouped.marked.split.recal.g.vcf.gz",
         tmp=directory("tmp")
-    output: "{dir}/combined.sorted.grouped.marked.split.recal.g.gt.vcf" # renamed in next rule
+    output: "data/combined.sorted.grouped.marked.split.recal.g.gt.vcf" # renamed in next rule
     resources:
         mem_mb=GATK_MEM
     shell:
@@ -129,16 +129,16 @@ rule call_vcf_variants:
         """
 
 rule final_vcf_naming:
-    input: "{dir}/combined.sorted.grouped.marked.split.recal.g.gt.vcf"
-    output: "{dir}/combined.spritz.vcf"
+    input: "data/combined.sorted.grouped.marked.split.recal.g.gt.vcf"
+    output: "data/combined.spritz.vcf"
     shell: "mv {input} {output}"
 
 rule filter_indels:
     input:
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        vcf="{dir}/combined.spritz.vcf"
+        vcf="data/combined.spritz.vcf"
     output:
-        "{dir}/combined.spritz.noindels.vcf"
+        "data/combined.spritz.noindels.vcf"
     shell:
         "gatk SelectVariants --select-type-to-exclude INDEL -R {input.fa} -V {input.vcf} -O {output} && "
         "gatk IndexFeatureFile -F {output}"
@@ -171,19 +171,19 @@ rule variant_annotation_ref:
         "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        vcf="{dir}/combined.spritz.vcf",
+        vcf="data/combined.spritz.vcf",
     output:
-        ann="{dir}/combined.spritz.snpeff.vcf",
-        html="{dir}/combined.spritz.snpeff.html",
-        genesummary="{dir}/combined.spritz.snpeff.genes.txt",
-        protfa="{dir}/combined.spritz.snpeff.protein.fasta",
-        protxml="{dir}/combined.spritz.snpeff.protein.xml"
+        ann="data/combined.spritz.snpeff.vcf",
+        html="data/combined.spritz.snpeff.html",
+        genesummary="data/combined.spritz.snpeff.genes.txt",
+        protfa="data/combined.spritz.snpeff.protein.fasta",
+        protxml="data/combined.spritz.snpeff.protein.xml"
     params:
         ref="GRCh38.86", # no isoform reconstruction
     resources:
         mem_mb=16000
     log:
-        "{dir}/combined.spritz.snpeff.log"
+        "data/combined.spritz.snpeff.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml} "
@@ -195,8 +195,8 @@ rule variant_annotation_custom:
         "data/SnpEffDatabases.txt",
         snpeff="SnpEff/snpEff.jar",
         fa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa",
-        vcf="{dir}/combined.spritz.vcf",
-        vcfnoindels="{dir}/combined.spritz.vcf",
+        vcf="data/combined.spritz.vcf",
+        vcfnoindels="data/combined.spritz.vcf",
         isoform_reconstruction="SnpEff/data/combined.sorted.filtered.withcds.gtf/genes.gtf"
     output:
         ann="{dir}/combined.spritz.isoformvariants.vcf",
@@ -212,7 +212,7 @@ rule variant_annotation_custom:
     resources:
         mem_mb=16000
     log:
-        "{dir}/combined.spritz.isoformvariants.log"
+        "data/combined.spritz.isoformvariants.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml}"

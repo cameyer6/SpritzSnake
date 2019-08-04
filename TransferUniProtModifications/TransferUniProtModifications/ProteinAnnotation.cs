@@ -22,6 +22,55 @@ namespace TransferUniProtModifications
         }
 
         /// <summary>
+        /// Takes coding effect files from star-fusion to produce proteins
+        /// </summary>
+        /// <param name="codingEffectFilePath"></param>
+        /// <returns></returns>
+        public static string ParseCodingEffectsToXml(string codingEffectFilePaths, int minPeptideLength = 7, string organism = "Homo sapiens")
+        {
+            List<Protein> fusionProteins = new List<Protein>();
+            HashSet<string> usedAccessions = new HashSet<string>();
+            var paths = codingEffectFilePaths.Split(",");
+            foreach (string path in paths)
+            {
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    while (true)
+                    {
+                        string line = reader.ReadLine();
+                        if (line == null) { break; }
+                        if (line.StartsWith("#")) { break; } // skip header
+                        string[] s = line.Split('\t');
+                        var fusionName = s[0];
+                        var junctionSpanningReadCount = s[1];
+                        var spliceType = s[3];
+                        var leftGene = s[4];
+                        var leftBreakpoint = s[5];
+                        var rightGene = s[6];
+                        var rightBreakpoint = s[7];
+                        var ffpm = s[9];
+                        var annots = s[14];
+                        var proteinFusionType = s[19];
+                        var proteinFusionTranslation = s[22];
+                        var proteinSequence = proteinFusionTranslation.Split('*')[0];
+                        if (proteinSequence.Length < minPeptideLength) { continue; }
+                        string accession = fusionName;
+                        int i = 1;
+                        while (usedAccessions.Contains(accession))
+                        {
+                            accession = fusionName + "_" + i++.ToString();
+                        }
+                        usedAccessions.Add(accession);
+                        fusionProteins.Add(new Protein(proteinSequence, accession, organism, new List<Tuple<string, string>> { new Tuple<string, string>("fusion", leftGene + "--" + rightGene) }));
+                    }
+                }
+            }
+            string fusionProteinXmlPath = Path.Combine(Path.GetDirectoryName(paths[0]), "FusionProteins.xml");
+            ProteinDbWriter.WriteXmlDatabase(null, fusionProteins, fusionProteinXmlPath);
+            return fusionProteinXmlPath;
+        }
+
+        /// <summary>
         /// Transfers likely modifications from a list of proteins to another based on sequence similarity. Returns a list of new objects.
         /// </summary>
         /// <param name="proteogenomicProteins"></param>

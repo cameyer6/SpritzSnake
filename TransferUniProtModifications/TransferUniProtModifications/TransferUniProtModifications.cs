@@ -20,15 +20,18 @@ namespace TransferUniProtModifications
 
             p.Setup(arg => arg.SpritzXml)
                 .As('y', "spritz_xml")
-                .Required()
                 .WithDescription("Custom protein XML file, e.g. from Spritz.");
+
+            p.Setup(arg => arg.FusionCodingEffects)
+                .As('f', "fusion_coding_effect")
+                .WithDescription("Coding effects from STAR-Fusion, comma separated");
 
             p.SetupHelp("h", "help")
                 .Callback(text => Console.WriteLine(text));
 
             var result = p.Parse(args);
 
-            TransferModifications(p.Object.UniProtXml, p.Object.SpritzXml);
+            TransferModifications(p.Object.UniProtXml, p.Object.SpritzXml ?? ProteinAnnotation.ParseCodingEffectsToXml(p.Object.FusionCodingEffects));
         }
 
         public static string TransferModifications(string sourceXmlPath, string destinationXmlPath)
@@ -50,6 +53,7 @@ namespace TransferUniProtModifications
             public string SpritzXml { get; set; }
             public string ReferenceGeneModel { get; set; }
             public string UniProtXml { get; set; }
+            public string FusionCodingEffects { get; set; }
         }
     }
 }

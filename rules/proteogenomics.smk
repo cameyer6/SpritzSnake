@@ -22,7 +22,7 @@ rule transfer_modifications_variant:
         protxml=temp("data/combined.spritz.snpeff.protein.withmods.xml"),
         protxmlgz="data/combined.spritz.snpeff.protein.withmods.xml.gz"
     shell:
-        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip {input.protxml}"
+        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip -k {output.protxml}" # typo
 
 rule transfer_modifications_isoformvariant:
     input:
@@ -33,7 +33,7 @@ rule transfer_modifications_isoformvariant:
         protxml=temp("data/combined.spritz.isoformvariants.protein.withmods.xml"),
         protxmlgz="data/combined.spritz.isoformvariants.protein.withmods.xml.gz"
     shell:
-        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip {output.protxml}"
+        "dotnet {input.transfermods} -x {input.unixml} -y {input.protxml} && gzip -k {output.protxml}"
 
 rule reference_protein_xml:
     """
@@ -60,7 +60,7 @@ rule reference_protein_xml:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # no isoforms, no variants
         "dotnet {input.transfermods} -x {input.unixml} -y {output.protxml} && "
-        "gzip {output.protxmlwithmods} {output.protxml}"
+        "gzip -k {output.protxmlwithmods} {output.protxml}"
 
 rule custom_protein_xml:
     """
@@ -88,4 +88,4 @@ rule custom_protein_xml:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -nostats"
         " -xmlProt {output.protxml} {params.ref}) 2> {log} && " # isoforms, no variants
         "dotnet {input.transfermods} -x {input.unixml} -y {output.protxml} &&"
-        "gzip {output.protxmlwithmods} {output.protxml}"
+        "gzip -k {output.protxmlwithmods} {output.protxml}"

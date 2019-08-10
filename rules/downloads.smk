@@ -111,5 +111,6 @@ rule compress_fastqs:
     output:
         "data/{sra,[A-Z0-9]+}_1.fastq.gz",
         "data/{sra,[A-Z0-9]+}_2.fastq.gz"
+    threads: 2
     shell:
-        "gzip {input}"
+        "gzip {input[0]} & gzip {input[1]}"

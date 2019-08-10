@@ -8,7 +8,7 @@ rule download_premade_fusion_indices:
         "tar -C data -xz"
 
 rule unzip_for_star_fusion:
-    ''''''
+    '''Gunzip files before STAR-Fusion because it doesn't play well with gunzip commands'''
     input:
         fq1="data/trimmed/{sra}.trim_1.fastq.gz" if check_sra() is True else expand("data/{fq1}_1.fastq.gz", fq1=config["fq1"]),
         fq2="data/trimmed/{sra}.trim_2.fastq.gz" if check_sra() is True else expand("data/{fq2}_2.fastq.gz", fq2=config["fq2"]),
@@ -41,6 +41,7 @@ rule generate_fusion_proteins:
     '''Use coding effects to generate fusion proteins'''
     input:
         expand("output/{sra}FusionAnalysis/star-fusion.fusion_predictions.abridged.coding_effect.tsv", sra=config["sra"]),
+        unixml=UNIPROTXML,
         transfermods=TRANSFER_MOD_DLL,
     output:
         "output/FusionProteins.xml",

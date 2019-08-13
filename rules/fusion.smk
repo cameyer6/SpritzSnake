@@ -28,7 +28,12 @@ rule rsem_star_fusion:
         fq1="data/trimmed/{sra}.trim_1.fastq" if check_sra() is True else expand("data/{fq1}_1.fastq", fq1=config["fq1"]),
         fq2="data/trimmed/{sra}.trim_2.fastq" if check_sra() is True else expand("data/{fq2}_2.fastq", fq2=config["fq2"]),
     output:
-        "output/{sra}FusionAnalysis/star-fusion.fusion_predictions.abridged.coding_effect.tsv"
+        "output/{sra}FusionAnalysis/star-fusion.fusion_predictions.abridged.coding_effect.tsv",
+        temp("output/{sra}FusionAnalysis/Aligned.out.bam"),
+        temp(directory("output/{sra}FusionAnalysis/star-fusion.preliminary")),
+        temp(directory("output/{sra}FusionAnalysis/_STARgenome")),
+        temp(directory("output/{sra}FusionAnalysis/_STARpass1")),
+        temp(directory("output/{sra}FusionAnalysis/_starF_checkpoints")),
     resources: mem_mb=50000
     threads: 12
     log: "output/{sra}STARFusion.log"
@@ -37,10 +42,15 @@ rule rsem_star_fusion:
         " --genome_lib_dir {input.genomelibdir} --output_dir output/{wildcards.sra}FusionAnalysis "
         " --left_fq {input.fq1} --right_fq {input.fq2}) &> {log}"
 
+rule add_srr_to_output:
+    input: "output/{sra}FusionAnalysis/star-fusion.fusion_predictions.abridged.coding_effect.tsv"
+    output: "output/{sra}star-fusion.fusion_predictions.abridged.coding_effect.tsv"
+    shell: "mv {input} {output}"
+
 rule generate_fusion_proteins:
     '''Use coding effects to generate fusion proteins'''
     input:
-        expand("output/{sra}FusionAnalysis/star-fusion.fusion_predictions.abridged.coding_effect.tsv", sra=config["sra"]),
+        expand("output/{sra}star-fusion.fusion_predictions.abridged.coding_effect.tsv", sra=config["sra"]),
         unixml=UNIPROTXML,
         transfermods=TRANSFER_MOD_DLL,
     output:
@@ -48,4 +58,4 @@ rule generate_fusion_proteins:
         "output/FusionProteins.withmods.xml"
     shell:
         "dotnet {input.transfermods} -x {input.unixml} -f " +
-        ",".join(expand("output/{sra}FusionAnalysis/star-fusion.fusion_predictions.abridged.coding_effect.tsv", sra=config["sra"]))
+        ",".join(expand("output/{sra}star-fusion.fusion_predictions.abridged.coding_effect.tsv", sra=config["sra"]))

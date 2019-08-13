@@ -109,8 +109,8 @@ rule compress_fastqs:
         temp("data/{sra,[A-Z0-9]+}_1.fastq"),
         temp("data/{sra,[A-Z0-9]+}_2.fastq")
     output:
-        "data/{sra,[A-Z0-9]+}_1.fastq.gz",
-        "data/{sra,[A-Z0-9]+}_2.fastq.gz"
+        temp("data/{sra,[A-Z0-9]+}_1.fastq.gz"),
+        temp("data/{sra,[A-Z0-9]+}_2.fastq.gz")
     threads: 2
     shell:
         "gzip {input[0]} & gzip {input[1]}"

@@ -15,10 +15,12 @@ dependencies:
   - fastqc
   - skewer
   - star =2.7.0f-0
-  - numpy
+  - numpy =1.16.4
   - biopython
   - bcbio-gff
   - pandas
   - rsem =1.3.2-0
   - star-fusion =1.6.0
   - perl-carp-assert # for STAR-Fusion
+  - igv-reports # for STAR-Fusion
+  - trinity=2.8.4-0 # for STAR-Fusion

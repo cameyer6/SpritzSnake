@@ -29,7 +29,8 @@ rule rsem_star_fusion:
         fq2="data/trimmed/{sra}.trim_2.fastq" if check_sra() is True else expand("data/{fq2}_2.fastq", fq2=config["fq2"]),
     output:
         "output/{sra}FusionAnalysis/star-fusion.fusion_predictions.abridged.coding_effect.tsv",
-        temp("output/{sra}FusionAnalysis/Aligned.out.bam"),
+        "output/{sra}FusionAnalysis/Aligned.out.bam",
+        "output/{sra}FusionAnalysis/Chimeric.out.junction",
         temp(directory("output/{sra}FusionAnalysis/star-fusion.preliminary")),
         temp(directory("output/{sra}FusionAnalysis/_STARgenome")),
         temp(directory("output/{sra}FusionAnalysis/_STARpass1")),
@@ -37,8 +38,10 @@ rule rsem_star_fusion:
     resources: mem_mb=50000
     threads: 12
     log: "output/{sra}STARFusion.log"
+    params:
+        validation="--FusionInspector validate --denovo_reconstruct" # does realignment and trinity reconstructions to validate fusions
     shell:
-        "(STAR-Fusion --examine_coding_effect --CPU {threads} --tmpdir {input.tmpdir} "
+        "(STAR-Fusion --examine_coding_effect {params.validation} --CPU {threads} --tmpdir {input.tmpdir} "
         " --genome_lib_dir {input.genomelibdir} --output_dir output/{wildcards.sra}FusionAnalysis "
         " --left_fq {input.fq1} --right_fq {input.fq2}) &> {log}"
 

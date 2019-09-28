@@ -121,11 +121,9 @@ namespace TransferUniProtModifications
             }
 
             // Some stats output
-            Console.WriteLine($"{proteogenomicProteins.Count}\tProteins translated from gene model");
+            Console.WriteLine($"{proteogenomicProteins.Count}\tCanonincal proteins translated from gene model (without applied variations)");
             Console.WriteLine($"{seqsInCommon.Count}\tProteins with exact sequence match in UniProt");
             Console.WriteLine($"{pgOnlySeqs.Count}\tProteins without exact sequence match in UniProt");
-            Console.WriteLine();
-            Console.WriteLine($"{proteogenomicProteins.Count(p => p.AppliedSequenceVariations.Any())}\tVariant proteins");
 
             return newProteins;
         }

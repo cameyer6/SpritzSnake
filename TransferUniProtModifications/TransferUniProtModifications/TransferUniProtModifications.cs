@@ -63,7 +63,7 @@ namespace TransferUniProtModifications
             int numberOfVariantProteinEntries = spritz.Count - spritzCanonical.Count;
             int synonymousCount = 0;
             int totalVariants = 0;
-            int savCount = 0;
+            int missenseCount = 0;
             int insertionCount = 0;
             int deletionCount = 0;
             int frameshiftCount = 0;
@@ -93,7 +93,7 @@ namespace TransferUniProtModifications
             foreach (var entry in allVariants)
             {
                 foreach (var variant in entry.Value)
-                {
+                {                    
                     if (culture.CompareInfo.IndexOf(variant.Description.Description, "synonymous_variant", CompareOptions.IgnoreCase) >= 0)
                     {
                         synonymousCount++;
@@ -101,7 +101,7 @@ namespace TransferUniProtModifications
                     }
                     if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0)
                     {
-                        savCount++;
+                        missenseCount++;
                         totalVariants++;
                     }
                     else if (culture.CompareInfo.IndexOf(variant.Description.Description, "frameshift_variant", CompareOptions.IgnoreCase) >= 0)
@@ -139,9 +139,9 @@ namespace TransferUniProtModifications
             summary[3] = $"Total number of canonical protein entries in the database: {numberOfCanonicalProteinEntries}";
             summary[4] = $"Total number of variant containing protein entries in the database: {numberOfVariantProteinEntries}";
             summary[5] = $"  Total number of unique variants in the database: {totalVariants}";
-            summary[6] = $"      Total number of  unique synonymous variants in the database: {synonymousCount}";
+            summary[6] = $"      Total number of unique synonymous variants in the database: {synonymousCount}";
             summary[7] = $"      Total number of unique nonsynonymous variants in the database: {(totalVariants - synonymousCount)}";
-            summary[8] = $"          Number of unique SAVs in the database: {savCount}";
+            summary[8] = $"          Number of unique missense variants in the database: {missenseCount}";
             summary[9] = $"          Number of unique frameshift variants in the database: {frameshiftCount}";
             summary[10] = $"         Number of unique insertion variants in the database: {insertionCount}";
             summary[11] = $"         Number of unique deletion variants in the database: {deletionCount}";

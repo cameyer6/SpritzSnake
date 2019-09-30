@@ -212,7 +212,7 @@ rule variant_annotation_custom:
     resources:
         mem_mb=16000
     log:
-        "data/combined.spritz.isoformvariants.log"
+        "{dir}/combined.spritz.isoformvariants.log"
     shell:
         "(java -Xmx{resources.mem_mb}M -jar {input.snpeff} -v -stats {output.html}"
         " -fastaProt {output.protfa} -xmlProt {output.protxml}"

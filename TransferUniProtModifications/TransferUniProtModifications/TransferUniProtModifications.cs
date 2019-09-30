@@ -23,15 +23,18 @@ namespace TransferUniProtModifications
 
             p.Setup(arg => arg.SpritzXml)
                 .As('y', "spritz_xml")
-                .Required()
                 .WithDescription("Custom protein XML file, e.g. from Spritz.");
+
+            p.Setup(arg => arg.FusionCodingEffects)
+                .As('f', "fusion_coding_effect")
+                .WithDescription("Coding effects from STAR-Fusion, comma separated");
 
             p.SetupHelp("h", "help")
                 .Callback(text => Console.WriteLine(text));
 
             var result = p.Parse(args);
 
-            TransferModifications(p.Object.UniProtXml, p.Object.SpritzXml);
+            TransferModifications(p.Object.UniProtXml, p.Object.SpritzXml ?? ProteinAnnotation.ParseCodingEffectsToXml(p.Object.FusionCodingEffects));
             DatabaseSummary(p.Object.UniProtXml, p.Object.SpritzXml);
         }
 
@@ -66,11 +69,10 @@ namespace TransferUniProtModifications
             int frameshiftCount = 0;
             int stopGainCount = 0;
             int stopLossCount = 0;
-            int exonLossCount = 0;
             Dictionary<string, List<SequenceVariation>> allVariants = new Dictionary<string, List<SequenceVariation>>();
             foreach (var spritzEntry in spritz)
             {
-                if (spritzEntry.AppliedSequenceVariations.Count() != 0)
+                if (spritzEntry.AppliedSequenceVariations.Count != 0)
                 {
                     if (allVariants.ContainsKey(spritzEntry.NonVariantProtein.Accession))
                     {
@@ -80,7 +82,6 @@ namespace TransferUniProtModifications
                             {
                                 allVariants[spritzEntry.NonVariantProtein.Accession].Add(variant);
                             }
-
                         }
                     }
                     else
@@ -88,7 +89,7 @@ namespace TransferUniProtModifications
                         allVariants.Add(spritzEntry.NonVariantProtein.Accession, spritzEntry.AppliedSequenceVariations);
                     }
                 }
-            }          
+            }
             foreach (var entry in allVariants)
             {
                 foreach (var variant in entry.Value)
@@ -113,19 +114,14 @@ namespace TransferUniProtModifications
                         stopGainCount++;
                         totalVariants++;
                     }
-                    else if ((culture.CompareInfo.IndexOf(variant.Description.Description, "conservative_inframe_insertion", CompareOptions.IgnoreCase) >= 0) || (culture.CompareInfo.IndexOf(variant.Description.Description, "disruptive_inframe_insertion", CompareOptions.IgnoreCase) >= 0))
+                    else if (culture.CompareInfo.IndexOf(variant.Description.Description, "conservative_inframe_insertion", CompareOptions.IgnoreCase) >= 0 || culture.CompareInfo.IndexOf(variant.Description.Description, "disruptive_inframe_insertion", CompareOptions.IgnoreCase) >= 0)
                     {
                         insertionCount++;
                         totalVariants++;
                     }
-                    else if ((culture.CompareInfo.IndexOf(variant.Description.Description, "conservative_inframe_deletion", CompareOptions.IgnoreCase) >= 0) || (culture.CompareInfo.IndexOf(variant.Description.Description, "disruptive_inframe_deletion", CompareOptions.IgnoreCase) >= 0))
+                    else if (culture.CompareInfo.IndexOf(variant.Description.Description, "conservative_inframe_deletion", CompareOptions.IgnoreCase) >= 0 || culture.CompareInfo.IndexOf(variant.Description.Description, "disruptive_inframe_deletion", CompareOptions.IgnoreCase) >= 0)
                     {
                         deletionCount++;
-                        totalVariants++;
-                    }
-                    else if (culture.CompareInfo.IndexOf(variant.Description.Description, "exon_loss_variant", CompareOptions.IgnoreCase) >= 0)
-                    {
-                        exonLossCount++;
                         totalVariants++;
                     }
                     else if (culture.CompareInfo.IndexOf(variant.Description.Description, "stop_loss", CompareOptions.IgnoreCase) >= 0)
@@ -134,28 +130,25 @@ namespace TransferUniProtModifications
                         totalVariants++;
                     }
                 }
-
             }
 
             string[] summary = new string[20];
-            summary[0] = "Spritz Database Summary";
-            summary[1] = "--------------------------------------------------------------";
-            summary[2] = "Total number of protein entries in the database: " + spritz.Count();
-            summary[3] = "Total number of canonical protein entries in the database: " + numberOfCanonicalProteinEntries;
-            summary[4] = "Total number of variant containing protein entries in the database: " + numberOfVariantProteinEntries;
-            summary[5] = "  Total number of unique variants in the database: " + totalVariants;
-            summary[6] = "      Total number of  unique synonymous variants in the database: " + synonymousCount;
-            summary[7] = "      Total number of unique nonsynonymous variants in the database: " + (totalVariants - synonymousCount);
-            summary[8] = "          Number of unique SAVs in the database: " + savCount;
-            summary[9] = "          Number of unique frameshift variants in the database: " + frameshiftCount;
-            summary[10] = "         Number of unique insertion variants in the database: " + insertionCount;
-            summary[11] = "         Number of unique deletion variants in the database: " + deletionCount;
-            summary[12] = "         Number of unique stop gain variants in the database: " + stopGainCount;
-            summary[13] = "         Number of unique stop loss variants in the database: " + stopLossCount;
-            summary[14] = "         Number of unique exon loss variants int he database: " + exonLossCount;
+            summary[0] = $"Spritz Database Summary";
+            summary[1] = $"--------------------------------------------------------------";
+            summary[2] = $"Total number of protein entries in the database: {spritz.Count}";
+            summary[3] = $"Total number of canonical protein entries in the database: {numberOfCanonicalProteinEntries}";
+            summary[4] = $"Total number of variant containing protein entries in the database: {numberOfVariantProteinEntries}";
+            summary[5] = $"  Total number of unique variants in the database: {totalVariants}";
+            summary[6] = $"      Total number of  unique synonymous variants in the database: {synonymousCount}";
+            summary[7] = $"      Total number of unique nonsynonymous variants in the database: {(totalVariants - synonymousCount)}";
+            summary[8] = $"          Number of unique SAVs in the database: {savCount}";
+            summary[9] = $"          Number of unique frameshift variants in the database: {frameshiftCount}";
+            summary[10] = $"         Number of unique insertion variants in the database: {insertionCount}";
+            summary[11] = $"         Number of unique deletion variants in the database: {deletionCount}";
+            summary[12] = $"         Number of unique stop gain variants in the database: {stopGainCount}";
+            summary[13] = $"         Number of unique stop loss variants in the database: {stopLossCount}";
 
             File.WriteAllLines(Path.Combine(Path.GetDirectoryName(destinationXmlPath), "SpritzDatabaseSummary.txt"), summary);
-
         }
 
         public class ApplicationArguments
@@ -163,6 +156,7 @@ namespace TransferUniProtModifications
             public string SpritzXml { get; set; }
             public string ReferenceGeneModel { get; set; }
             public string UniProtXml { get; set; }
+            public string FusionCodingEffects { get; set; }
         }
     }
 }

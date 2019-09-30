@@ -28,9 +28,9 @@ rule unzip_ensembl:
         vcf="data/ensembl/common_all_20170710.vcf.gz",
         vcfidx="data/ensembl/common_all_20170710.vcf.idx.gz"
     output:
-        gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
-        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3",
-        pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
+        gfa=GENOME_FA,
+        gff=ENSEMBL_GFF,
+        pfa="data/ensembl/Homo_sapiens." + GENOME_VERSION + ".pep.all.fa",
         vcf="data/ensembl/common_all_20170710.vcf",
         vcfidx="data/ensembl/common_all_20170710.vcf.idx"
     log: "data/ensembl/downloads.log"
@@ -61,8 +61,8 @@ rule download_chromosome_mappings:
     shell: "git clone https://github.com/dpryan79/ChromosomeMappings.git"
 
 rule reorder_genome_fasta:
-    input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-    output: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
+    input: "data/ensembl/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.fa"
+    output: "data/ensembl/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.karyotypic.fa"
     script: "../scripts/karyotypic_order.py"
 
 rule convert_ucsc2ensembl:
@@ -80,9 +80,15 @@ rule index_ucsc2ensembl:
     shell: "gatk IndexFeatureFile -F {input}"
 
 rule filter_gff3:
-    input: "data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+    input: ENSEMBL_GFF
     output: "data/ensembl/202122.gff3"
-    shell: "grep \"^#\|20\|^21\|^22\" \"data/ensembl/Homo_sapiens.GRCh38.81.gff3\" > \"data/ensembl/202122.gff3\""
+    shell: "grep \"^#\|^20\|^21\|^22\" \"data/ensembl/Homo_sapiens.GRCh38.81.gff3\" > \"data/ensembl/202122.gff3\""
+
+rule fix_gff3_for_rsem:
+    '''This script changes descriptive notes in column 4 to "gene" if a gene row, and it also adds ERCCs to the gene model'''
+    input: ENSEMBL_GFF
+    output: ENSEMBL_GFF + ".fix.gff3"
+    shell: "python scripts/fix_gff3_for_rsem.py {input} {output}"
 
 rule filter_fa:
     input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
@@ -103,7 +109,8 @@ rule compress_fastqs:
         temp("data/{sra,[A-Z0-9]+}_1.fastq"),
         temp("data/{sra,[A-Z0-9]+}_2.fastq")
     output:
-        "data/{sra,[A-Z0-9]+}_1.fastq.gz",
-        "data/{sra,[A-Z0-9]+}_2.fastq.gz"
+        temp("data/{sra,[A-Z0-9]+}_1.fastq.gz"),
+        temp("data/{sra,[A-Z0-9]+}_2.fastq.gz")
+    threads: 2
     shell:
-        "gzip {input}"
+        "gzip {input[0]} & gzip {input[1]}"

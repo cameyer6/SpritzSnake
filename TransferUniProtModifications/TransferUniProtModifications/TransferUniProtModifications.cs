@@ -63,7 +63,8 @@ namespace TransferUniProtModifications
             int numberOfVariantProteinEntries = spritz.Count - spritzCanonical.Count;
             int synonymousCount = 0;
             int totalVariants = 0;
-            int missenseCount = 0;
+            int missenseSnvCount = 0;
+            int missenseMnvCount = 0;
             int insertionCount = 0;
             int deletionCount = 0;
             int frameshiftCount = 0;
@@ -99,9 +100,15 @@ namespace TransferUniProtModifications
                         synonymousCount++;
                         totalVariants++;
                     }
-                    if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0)
+                    else if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0 &&
+                        variant.Description.ReferenceAlleleString.Length == 1 && variant.Description.AlternateAlleleString.Length == 1)
                     {
-                        missenseCount++;
+                        missenseSnvCount++;
+                        totalVariants++;
+                    }
+                    else if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0)
+                    {
+                        missenseMnvCount++;
                         totalVariants++;
                     }
                     else if (culture.CompareInfo.IndexOf(variant.Description.Description, "frameshift_variant", CompareOptions.IgnoreCase) >= 0)
@@ -140,7 +147,8 @@ namespace TransferUniProtModifications
             Console.WriteLine($"{totalVariants}\tTotal number of unique variants");
             Console.WriteLine($"{synonymousCount}Total number of unique synonymous variants");
             Console.WriteLine($"{(totalVariants - synonymousCount)}\tTotal number of unique nonsynonymous variants");
-            Console.WriteLine($"{missenseCount}\tNumber of unique missense variants");
+            Console.WriteLine($"{missenseSnvCount}\tNumber of unique SNV missense variants");
+            Console.WriteLine($"{missenseMnvCount}\tNumber of unique MNV missense variants");
             Console.WriteLine($"{frameshiftCount}\tNumber of unique frameshift variants");
             Console.WriteLine($"{insertionCount}\tNumber of unique insertion variants");
             Console.WriteLine($"{deletionCount}\tNumber of unique deletion variants");

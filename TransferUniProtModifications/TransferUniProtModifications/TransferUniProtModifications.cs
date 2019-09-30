@@ -63,7 +63,7 @@ namespace TransferUniProtModifications
             int numberOfVariantProteinEntries = spritz.Count - spritzCanonical.Count;
             int synonymousCount = 0;
             int totalVariants = 0;
-            int savCount = 0;
+            int missenseCount = 0;
             int insertionCount = 0;
             int deletionCount = 0;
             int frameshiftCount = 0;
@@ -93,7 +93,7 @@ namespace TransferUniProtModifications
             foreach (var entry in allVariants)
             {
                 foreach (var variant in entry.Value)
-                {
+                {                    
                     if (culture.CompareInfo.IndexOf(variant.Description.Description, "synonymous_variant", CompareOptions.IgnoreCase) >= 0)
                     {
                         synonymousCount++;
@@ -101,7 +101,7 @@ namespace TransferUniProtModifications
                     }
                     if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0)
                     {
-                        savCount++;
+                        missenseCount++;
                         totalVariants++;
                     }
                     else if (culture.CompareInfo.IndexOf(variant.Description.Description, "frameshift_variant", CompareOptions.IgnoreCase) >= 0)
@@ -140,7 +140,7 @@ namespace TransferUniProtModifications
             Console.WriteLine($"{totalVariants}\tTotal number of unique variants");
             Console.WriteLine($"{synonymousCount}Total number of unique synonymous variants");
             Console.WriteLine($"{(totalVariants - synonymousCount)}\tTotal number of unique nonsynonymous variants");
-            Console.WriteLine($"{savCount}\tNumber of unique SAVs");
+            Console.WriteLine($"{missenseCount}\tNumber of unique missense variants");
             Console.WriteLine($"{frameshiftCount}\tNumber of unique frameshift variants");
             Console.WriteLine($"{insertionCount}\tNumber of unique insertion variants");
             Console.WriteLine($"{deletionCount}\tNumber of unique deletion variants");

@@ -93,7 +93,7 @@ namespace TransferUniProtModifications
             foreach (var entry in allVariants)
             {
                 foreach (var variant in entry.Value)
-                {
+                {                    
                     if (culture.CompareInfo.IndexOf(variant.Description.Description, "synonymous_variant", CompareOptions.IgnoreCase) >= 0)
                     {
                         synonymousCount++;
@@ -141,7 +141,7 @@ namespace TransferUniProtModifications
             summary[5] = $"  Total number of unique variants in the database: {totalVariants}";
             summary[6] = $"      Total number of unique synonymous variants in the database: {synonymousCount}";
             summary[7] = $"      Total number of unique nonsynonymous variants in the database: {(totalVariants - synonymousCount)}";
-            summary[8] = $"          Number of unique msisense variants in the database: {missenseCount}";
+            summary[8] = $"          Number of unique missense variants in the database: {missenseCount}";
             summary[9] = $"          Number of unique frameshift variants in the database: {frameshiftCount}";
             summary[10] = $"         Number of unique insertion variants in the database: {insertionCount}";
             summary[11] = $"         Number of unique deletion variants in the database: {deletionCount}";

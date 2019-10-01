@@ -63,7 +63,8 @@ namespace TransferUniProtModifications
             int numberOfVariantProteinEntries = spritz.Count - spritzCanonical.Count;
             int synonymousCount = 0;
             int totalVariants = 0;
-            int missenseCount = 0;
+            int missenseSnvCount = 0;
+            int missenseMnvCount = 0;
             int insertionCount = 0;
             int deletionCount = 0;
             int frameshiftCount = 0;
@@ -99,9 +100,15 @@ namespace TransferUniProtModifications
                         synonymousCount++;
                         totalVariants++;
                     }
-                    if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0)
+                    else if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0 &&
+                        variant.Description.ReferenceAlleleString.Length == 1 && variant.Description.AlternateAlleleString.Length == 1)
                     {
-                        missenseCount++;
+                        missenseSnvCount++;
+                        totalVariants++;
+                    }
+                    else if (culture.CompareInfo.IndexOf(variant.Description.Description, "missense_variant", CompareOptions.IgnoreCase) >= 0)
+                    {
+                        missenseMnvCount++;
                         totalVariants++;
                     }
                     else if (culture.CompareInfo.IndexOf(variant.Description.Description, "frameshift_variant", CompareOptions.IgnoreCase) >= 0)
@@ -132,23 +139,21 @@ namespace TransferUniProtModifications
                 }
             }
 
-            string[] summary = new string[20];
-            summary[0] = $"Spritz Database Summary";
-            summary[1] = $"--------------------------------------------------------------";
-            summary[2] = $"Total number of protein entries in the database: {spritz.Count}";
-            summary[3] = $"Total number of canonical protein entries in the database: {numberOfCanonicalProteinEntries}";
-            summary[4] = $"Total number of variant containing protein entries in the database: {numberOfVariantProteinEntries}";
-            summary[5] = $"  Total number of unique variants in the database: {totalVariants}";
-            summary[6] = $"      Total number of unique synonymous variants in the database: {synonymousCount}";
-            summary[7] = $"      Total number of unique nonsynonymous variants in the database: {(totalVariants - synonymousCount)}";
-            summary[8] = $"          Number of unique missense variants in the database: {missenseCount}";
-            summary[9] = $"          Number of unique frameshift variants in the database: {frameshiftCount}";
-            summary[10] = $"         Number of unique insertion variants in the database: {insertionCount}";
-            summary[11] = $"         Number of unique deletion variants in the database: {deletionCount}";
-            summary[12] = $"         Number of unique stop gain variants in the database: {stopGainCount}";
-            summary[13] = $"         Number of unique stop loss variants in the database: {stopLossCount}";
-
-            File.WriteAllLines(Path.Combine(Path.GetDirectoryName(destinationXmlPath), "SpritzDatabaseSummary.txt"), summary);
+            Console.WriteLine($"Spritz Database Summary");
+            Console.WriteLine($"--------------------------------------------------------------");
+            Console.WriteLine($"{numberOfCanonicalProteinEntries}\tTotal number of canonical protein entries (before applying variations)");
+            Console.WriteLine($"{spritz.Count}\tTotal number of protein entries");
+            Console.WriteLine($"{numberOfVariantProteinEntries}\tTotal number of variant containing protein entries");
+            Console.WriteLine($"{totalVariants}\tTotal number of unique variants");
+            Console.WriteLine($"{synonymousCount}\tTotal number of unique synonymous variants");
+            Console.WriteLine($"{(totalVariants - synonymousCount)}\tTotal number of unique nonsynonymous variants");
+            Console.WriteLine($"{missenseSnvCount}\tNumber of unique SNV missense variants");
+            Console.WriteLine($"{missenseMnvCount}\tNumber of unique MNV missense variants");
+            Console.WriteLine($"{frameshiftCount}\tNumber of unique frameshift variants");
+            Console.WriteLine($"{insertionCount}\tNumber of unique insertion variants");
+            Console.WriteLine($"{deletionCount}\tNumber of unique deletion variants");
+            Console.WriteLine($"{stopGainCount}\tNumber of unique stop gain variants");
+            Console.WriteLine($"{stopLossCount}\tNumber of unique stop loss variants");
         }
 
         public class ApplicationArguments

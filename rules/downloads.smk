@@ -1,32 +1,4 @@
-# rule download_ensembl_references:
-#     output:
-#         gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
-#         gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3",
-#         pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
-#         vcf="data/ensembl/common_all_20170710.vcf",
-#         vcfidx="data/ensembl/common_all_20170710.vcf.idx"
-#     log: "data/ensembl/downloads.log"
-#     shell:
-#         "(wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz | "
-#         "gunzip -c > {output.gfa} && "
-#         "wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens.GRCh38.81.gff3.gz | "
-#         "gunzip -c > {output.gff} && "
-#         "wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz | "
-#         "gunzip -c > {output.pfa} && "
-#         "wget -O - ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh38p7/VCF/GATK/common_all_20170710.vcf.gz | "
-#         "gunzip -c > {output.vcf} && "
-#         "gatk IndexFeatureFile -F {output.vcf}) 2> {log}"
-#
-# def check_ensembel_references(wildcards):
-#     # if files exist in folder
-
-rule unzip_ensembl:
-    input:
-        gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz",
-        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3.gz",
-        pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa.gz",
-        vcf="data/ensembl/common_all_20170710.vcf.gz",
-        vcfidx="data/ensembl/common_all_20170710.vcf.idx.gz"
+rule download_ensembl_references:
     output:
         gfa=GENOME_FA,
         gff=ENSEMBL_GFF,
@@ -35,26 +7,23 @@ rule unzip_ensembl:
         vcfidx="data/ensembl/common_all_20170710.vcf.idx"
     log: "data/ensembl/downloads.log"
     shell:
-        """
-        if [ -e {input.gfa} ] && [ -e {input.gff} ] && [ -e {input.pfa} ] && [ -e {input.vcf} ] && [ -e {input.vcfidx} ]
-        then
-            gunzip -c {input.gfa} > {output.gfa} &&
-            gunzip -c {input.gff} > {output.gff} &&
-            gunzip -c {input.pfa} > {output.pfa} &&
-            gunzip -c {input.vcf} > {output.vcf} &&
-            gunzip -c {input.vcfidx} > {output.vcfidx}
-        else
-            (wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz |
-            gunzip -c > {output.gfa} &&
-            wget -O - ftp://ftp.ensembl.org/pub/release-81/gff3/homo_sapiens/Homo_sapiens.GRCh38.81.gff3.gz |
-            gunzip -c > {output.gff} &&
-            wget -O - ftp://ftp.ensembl.org/pub/release-81//fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz |
-            gunzip -c > {output.pfa} &&
-            wget -O - ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh38p7/VCF/GATK/common_all_20170710.vcf.gz |
-            gunzip -c > {output.vcf} &&
-            gatk IndexFeatureFile -F {output.vcf}) 2> {log}
-        fi
-        """
+        "if [ -e {input.gfa}.gz ] && [ -e {input.gff}.gz ] && [ -e {input.pfa}.gz ] && [ -e {input.vcf}.gz ]; then; "
+            "gunzip -c {input.gfa} > {output.gfa} && "
+            "gunzip -c {input.gff} > {output.gff} && "
+            "gunzip -c {input.pfa} > {output.pfa} && "
+            "gunzip -c {input.vcf} > {output.vcf} && "
+            "gatk IndexFeatureFile -F {output.vcf}; "
+        "else; "
+            "(wget -O - ftp://ftp.ensembl.org/pub/release-" + ENSEMBL_VERSION + "//fasta/homo_sapiens/dna/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.fa.gz | "
+            "gunzip -c > {output.gfa} && "
+            "wget -O - ftp://ftp.ensembl.org/pub/release-" + ENSEMBL_VERSION + "/gff3/homo_sapiens/Homo_sapiens." + GENEMODEL_VERSION + ".gff3.gz | "
+            "gunzip -c > {output.gff} && "
+            "wget -O - ftp://ftp.ensembl.org/pub/release-" + ENSEMBL_VERSION + "//fasta/homo_sapiens/pep/Homo_sapiens." + GENOME_VERSION + ".pep.all.fa.gz | "
+            "gunzip -c > {output.pfa} && "
+            "wget -O - ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh38p7/VCF/GATK/common_all_20170710.vcf.gz | "
+            "gunzip -c > {output.vcf} && "
+            "gatk IndexFeatureFile -F {output.vcf}) 2> {log}; "
+        "fi"
 
 rule download_chromosome_mappings:
     output: "ChromosomeMappings/GRCh38_UCSC2ensembl.txt"
@@ -82,7 +51,7 @@ rule index_ucsc2ensembl:
 rule filter_gff3:
     input: ENSEMBL_GFF
     output: "data/ensembl/202122.gff3"
-    shell: "grep \"^#\|^20\|^21\|^22\" \"data/ensembl/Homo_sapiens.GRCh38.81.gff3\" > \"data/ensembl/202122.gff3\""
+    shell: "grep \"^#\|^20\|^21\|^22\" \"data/ensembl/Homo_sapiens." + GENEMODEL_VERSION + ".gff3\" > \"data/ensembl/202122.gff3\""
 
 rule fix_gff3_for_rsem:
     '''This script changes descriptive notes in column 4 to "gene" if a gene row, and it also adds ERCCs to the gene model'''
@@ -91,7 +60,7 @@ rule fix_gff3_for_rsem:
     shell: "python scripts/fix_gff3_for_rsem.py {input} {output}"
 
 rule filter_fa:
-    input: "data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+    input: "data/ensembl/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.fa"
     output: "data/ensembl/202122.fa"
     script: "../scripts/filter_fasta.py"
 

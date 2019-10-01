@@ -5,6 +5,7 @@ STAR*
 .snakemake
 ChromosomeMappings
 data/
+AnalysisFolder/
 SnpEff
 tmp
 snpEffDatabases.txt

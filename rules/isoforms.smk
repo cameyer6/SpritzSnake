@@ -1,7 +1,7 @@
 rule assemble_transcripts:
     input:
         bam="data/combined.sorted.bam",
-        gff="data/ensembl/Homo_sapiens.GRCh38.81.gff3"
+        gff="data/ensembl/Homo_sapiens." + GENEMODEL_VERSION + ".gff3"
     output: "data/combined.sorted.gtf"
     threads: 12
     log: "data/combined.sorted.gtf.log"
@@ -37,8 +37,8 @@ rule generate_snpeff_database:
     input:
         jar="SnpEff/snpEff.jar",
         gtf="data/combined.sorted.filtered.withcds.gtf",
-        pfa="data/ensembl/Homo_sapiens.GRCh38.pep.all.fa",
-        gfa="data/ensembl/Homo_sapiens.GRCh38.dna.primary_assembly.karyotypic.fa"
+        pfa="data/ensembl/Homo_sapiens." + GENOME_VERSION + ".pep.all.fa",
+        gfa="data/ensembl/Homo_sapiens." + GENOME_VERSION + ".dna.primary_assembly.karyotypic.fa"
     output:
         gtf="SnpEff/data/combined.sorted.filtered.withcds.gtf/genes.gtf",
         pfa="SnpEff/data/combined.sorted.filtered.withcds.gtf/protein.fa",
@@ -50,14 +50,12 @@ rule generate_snpeff_database:
     log:
         "data/combined.sorted.filtered.withcds.snpeffdatabase.log"
     shell:
-        """
-        cp {input.gtf} {output.gtf}
-        cp {input.pfa} {output.pfa}
-        cp {input.gfa} {output.gfa}
-        echo \"\n# {params.ref}\" >> SnpEff/snpEff.config
-        echo \"{params.ref}.genome : Human genome GRCh38 using RefSeq transcripts\" >> SnpEff/snpEff.config
-        echo \"{params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config
-        echo \"\t{params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
-        echo \"\t{params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config
-        (java -Xmx{resources.mem_mb}M -jar {input.jar} build -gtf22 -v {params.ref}) 2> {log}
-        """
+        "cp {input.gtf} {output.gtf} && "
+        "cp {input.pfa} {output.pfa} && "
+        "cp {input.gfa} {output.gfa} && "
+        "echo \"\n# {params.ref}\" >> SnpEff/snpEff.config && "
+        "echo \"{params.ref}.genome : Human genome " + GENOME_VERSION + " using RefSeq transcripts\" >> SnpEff/snpEff.config && "
+        "echo \"{params.ref}.reference : ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/\" >> SnpEff/snpEff.config && "
+        "echo \"\t{params.ref}.M.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config && "
+        "echo \"\t{params.ref}.MT.codonTable : Vertebrate_Mitochondrial\" >> SnpEff/snpEff.config && "
+        "(java -Xmx{resources.mem_mb}M -jar {input.jar} build -gtf22 -v {params.ref}) 2> {log}"

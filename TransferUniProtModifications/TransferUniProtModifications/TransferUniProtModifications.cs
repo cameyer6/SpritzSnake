@@ -142,10 +142,10 @@ namespace TransferUniProtModifications
             Console.WriteLine($"Spritz Database Summary");
             Console.WriteLine($"--------------------------------------------------------------");
             Console.WriteLine($"{numberOfCanonicalProteinEntries}\tTotal number of canonical protein entries (before applying variations)");
-            Console.WriteLine($"{spritz.Count}\tTotal number of protein entries: ");
+            Console.WriteLine($"{spritz.Count}\tTotal number of protein entries");
             Console.WriteLine($"{numberOfVariantProteinEntries}\tTotal number of variant containing protein entries");
             Console.WriteLine($"{totalVariants}\tTotal number of unique variants");
-            Console.WriteLine($"{synonymousCount}Total number of unique synonymous variants");
+            Console.WriteLine($"{synonymousCount}\tTotal number of unique synonymous variants");
             Console.WriteLine($"{(totalVariants - synonymousCount)}\tTotal number of unique nonsynonymous variants");
             Console.WriteLine($"{missenseSnvCount}\tNumber of unique SNV missense variants");
             Console.WriteLine($"{missenseMnvCount}\tNumber of unique MNV missense variants");

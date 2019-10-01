@@ -38,8 +38,7 @@ rule rsem_star_fusion:
     resources: mem_mb=50000
     threads: 12
     log: "output/{sra}STARFusion.log"
-    params:
-        validation="--FusionInspector validate --denovo_reconstruct" # does realignment and trinity reconstructions to validate fusions
+    params: validation="--FusionInspector validate --denovo_reconstruct" # does realignment and trinity reconstructions to validate fusions
     shell:
         "(STAR-Fusion --examine_coding_effect {params.validation} --CPU {threads} --tmpdir {input.tmpdir} "
         " --genome_lib_dir {input.genomelibdir} --output_dir output/{wildcards.sra}FusionAnalysis "
